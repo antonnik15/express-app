@@ -24,15 +24,16 @@ export const inputPostsValidationMiddlewares = [
     }), body("blogId").trim().isString().withMessage({
         "message": "blogId is not a string",
         "field": "blogId"
+    }), body("blogId").custom(async id => {
+        const blog = await blogsRepository.findBlogById(id)
+        console.log(id)
+        if (blog) {
+            return true;
+        }
+    }).withMessage({
+        "message": "blogId is not exist",
+        "field": "blogId"
     })
 ]
-export const isValidBlogId = body("blogId").custom(async blogId => {
-    const blog = await blogsRepository.findBlogById(blogId)
-    if (blog && blog.id === blogId) {
-        return true;
-    }
-}).withMessage({
-    "message": "blogId is not exist in array",
-    "field": "blogId"
-})
+
 

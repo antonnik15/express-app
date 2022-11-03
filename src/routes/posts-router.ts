@@ -2,7 +2,6 @@ import {Request, Response, Router} from "express";
 import {postsRepository} from "../repositories/posts-repository";
 import {
     inputPostsValidationMiddlewares,
-    isValidBlogId
 } from "../middlewares/input-posts-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
 import {InputValidationMiddleware} from "../middlewares/input-blogs-validation-middlewares";
@@ -15,7 +14,6 @@ postsRouter.get("/", async (req: Request, res: Response) => {
 
 postsRouter.post("/",
     BasicAuthorization,
-    isValidBlogId,
     inputPostsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
