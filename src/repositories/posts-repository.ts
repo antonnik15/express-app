@@ -2,7 +2,7 @@ import {postsCollection, PostsType} from "./db";
 
 export const postsRepository = {
     async getAllPosts(): Promise<PostsType[]> {
-        return await postsCollection.find({}).toArray()
+        return await postsCollection.find({}, {projection: {_id: 0}}).toArray()
     },
     async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<PostsType | null> {
         const newPost = {
@@ -14,12 +14,11 @@ export const postsRepository = {
             blogName: "Travelling",
             createdAt: (new Date()).toISOString()
         }
-        const resultOfCreatingPost = postsCollection.insertOne(newPost)
-        return await postsCollection.findOne({title: title})
+        await postsCollection.insertOne(newPost)
+        return await postsCollection.findOne({title: title}, {projection: {_id: 0}})
     },
     async findPostById(id: string): Promise<PostsType | null> {
-        const post = await postsCollection.findOne({id: id})
-        return post
+        return await postsCollection.findOne({id: id}, {projection: {_id: 0}})
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) : Promise<number>{
         const resultOfUpdatingPost = await postsCollection.updateOne({id: id},

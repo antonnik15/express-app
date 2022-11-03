@@ -3,7 +3,7 @@ import {blogsCollection, BlogsType} from "./db";
 
 export const blogsRepository = {
     async getAllBlogs(): Promise<BlogsType[]> {
-        return blogsCollection.find({}).toArray()
+        return blogsCollection.find({}, {projection: {_id: 0}}).toArray()
     },
     async createNewBlogs(name: string, youtubeUrl: string) : Promise<BlogsType | null> {
         const newBlogs = {
@@ -13,10 +13,10 @@ export const blogsRepository = {
             createdAt: (new Date()).toISOString()
         }
         await blogsCollection.insertOne(newBlogs)
-        return await blogsCollection.findOne({name: name})
+        return await blogsCollection.findOne({name: name}, {projection: {_id: 0}})
     },
     async findBlogById(id: string): Promise<BlogsType | null> {
-        return await blogsCollection.findOne({id: id})
+        return await blogsCollection.findOne({id: id}, {projection: {_id: 0}})
     },
    async updateBlogById(id: string, name: string, youtubeUrl: string) : Promise<number> {
         const result = await blogsCollection.updateOne({id: id},
