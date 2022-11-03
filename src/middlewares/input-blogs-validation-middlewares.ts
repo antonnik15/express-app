@@ -1,14 +1,7 @@
 import {body, validationResult} from "express-validator";
 import {NextFunction, Response, Request} from "express";
 
-export const InputBlogsValidationMiddlewares = [body("name").trim()
-    .isLength({min: 1, max: 15}).withMessage({
-        "message": "Length of name more than 15 or less than 1 symbol",
-        "field": "name"
-    }).isString().withMessage({
-        "message": "field name is not a string",
-        "field": "name"
-    }), body("youtubeUrl").trim()
+export const InputBlogsValidationMiddlewares = [body("youtubeUrl").trim()
     .isLength({min: 1, max: 100}).withMessage({
         "message": "Length of youtubeUrl more than 100 or less than 1 symbol",
         "field": "youtubeUrl"
@@ -19,6 +12,13 @@ export const InputBlogsValidationMiddlewares = [body("name").trim()
     .withMessage({
         "message": "field youtubeUrl is not valid",
         "field": "youtubeUrl"
+    }),body("name").trim()
+    .isLength({min: 1, max: 15}).withMessage({
+        "message": "Length of name more than 15 or less than 1 symbol",
+        "field": "name"
+    }).isString().withMessage({
+        "message": "field name is not a string",
+        "field": "name"
     })]
 
 export const InputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
