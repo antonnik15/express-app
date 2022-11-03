@@ -1,4 +1,4 @@
-import {blogsCollection, BlogsType, client} from "./db";
+import {blogsCollection, BlogsType} from "./db";
 
 
 export const blogsRepository = {
@@ -16,8 +16,7 @@ export const blogsRepository = {
         return await blogsCollection.findOne({name: name})
     },
     async findBlogById(id: string): Promise<BlogsType | null> {
-        const blog = await blogsCollection.findOne({id: id})
-        return blog
+        return await blogsCollection.findOne({id: id})
     },
    async updateBlogById(id: string, name: string, youtubeUrl: string) : Promise<number> {
         const result = await blogsCollection.updateOne({id: id},

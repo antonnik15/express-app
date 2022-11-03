@@ -21,7 +21,7 @@ import {MongoClient} from "mongodb";
 const mongoUri = "mongodb+srv://admin:ie0viPkKZajs8o24@clusterforhometask.hhlpraq.mongodb.net/?retryWrites=true&w=majority"
 
 const client = new MongoClient(mongoUri)
-const db = client.db("hometask3")
+export const db = client.db("hometask3")
 export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
 

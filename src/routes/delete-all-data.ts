@@ -1,10 +1,10 @@
 import {Request, Response, Router} from "express";
-import {client} from "../repositories/db";
+import {db} from "../repositories/db";
 
 export const deleteRouter = Router({})
 
 deleteRouter.delete("/", async (req: Request, res: Response) => {
-    const result = await client.db("hometask3").dropDatabase()
+    const result = await db.dropDatabase()
     if (result) {
         res.sendStatus(204)
     }
