@@ -30,8 +30,9 @@ export const isValidBlogId = body("blogId").custom(async blogId => {
     const blog = await blogsRepository.findBlogById(blogId)
     if (blog) {
         return true;
-    } else {
-        throw new Error("blog is not found")
     }
+}).withMessage({
+    "message": "blogId is not exist in array",
+    "field": "blogId"
 })
 
