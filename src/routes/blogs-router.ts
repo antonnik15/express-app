@@ -24,7 +24,7 @@ blogsRouter.post("/",
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
     const blog = await blogsRepository.findBlogById(req.params.id)
     if (blog) {
-        res.status(201).send(blog)
+        res.status(200).send(blog)
     } else {
         res.sendStatus(404)
     }
