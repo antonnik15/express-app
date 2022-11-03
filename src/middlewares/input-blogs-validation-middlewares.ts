@@ -2,7 +2,7 @@ import {body, validationResult} from "express-validator";
 import {NextFunction, Response, Request} from "express";
 
 export const InputBlogsValidationMiddlewares = [body("youtubeUrl").trim()
-    .isLength({min: 1, max: 100}).withMessage({
+    .isLength({max: 100}).withMessage({
         "message": "Length of youtubeUrl more than 100 or less than 1 symbol",
         "field": "youtubeUrl"
     }).isString().withMessage({
