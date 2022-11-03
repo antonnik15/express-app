@@ -1,4 +1,5 @@
 import {body} from "express-validator";
+import {blogsRepository} from "../repositories/blogs-repository";
 
 export const inputPostsValidationMiddlewares = [
     body("title").trim().isString().withMessage({
@@ -25,3 +26,12 @@ export const inputPostsValidationMiddlewares = [
         "field": "blogId"
     })
 ]
+export const isValidBlogId = body("blogId").custom(async blogId => {
+    const blog = await blogsRepository.findBlogById(blogId)
+    if (blog) {
+        return true;
+    } else {
+        throw new Error("blog is not found")
+    }
+})
+

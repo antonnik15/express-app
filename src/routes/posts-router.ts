@@ -1,6 +1,9 @@
 import {Request, Response, Router} from "express";
 import {postsRepository} from "../repositories/posts-repository";
-import {inputPostsValidationMiddlewares} from "../middlewares/input-posts-validation-middlewares";
+import {
+    inputPostsValidationMiddlewares,
+    isValidBlogId
+} from "../middlewares/input-posts-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
 
 export const postsRouter = Router()
@@ -29,6 +32,7 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
 postsRouter.put("/:id",
     inputPostsValidationMiddlewares,
     BasicAuthorization,
+    isValidBlogId,
     async (req: Request, res: Response) => {
     const resultOfUpdating = await postsRepository.updatePost(req.params.id, req.body.title,
         req.body.shortDescription, req.body.content, req.body.blogId)
