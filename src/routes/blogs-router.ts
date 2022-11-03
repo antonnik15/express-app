@@ -18,7 +18,7 @@ blogsRouter.post("/",
     InputBlogsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
-    res.send(await blogsRepository.createNewBlogs(req.body.name, req.body.youtubeUrl))
+    res.status(201).send(await blogsRepository.createNewBlogs(req.body.name, req.body.youtubeUrl))
 })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
