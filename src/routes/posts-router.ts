@@ -5,6 +5,7 @@ import {
     isValidBlogId
 } from "../middlewares/input-posts-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
+import {InputValidationMiddleware} from "../middlewares/input-blogs-validation-middlewares";
 
 export const postsRouter = Router()
 
@@ -13,8 +14,10 @@ postsRouter.get("/", async (req: Request, res: Response) => {
 })
 
 postsRouter.post("/",
-    inputPostsValidationMiddlewares,
     BasicAuthorization,
+    isValidBlogId,
+    inputPostsValidationMiddlewares,
+    InputValidationMiddleware,
     async (req: Request, res: Response) => {
     res.status(201).send(await postsRepository.createPost(req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId))
@@ -30,9 +33,9 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
 })
 
 postsRouter.put("/:id",
-    inputPostsValidationMiddlewares,
     BasicAuthorization,
-    isValidBlogId,
+    inputPostsValidationMiddlewares,
+    InputValidationMiddleware,
     async (req: Request, res: Response) => {
     const resultOfUpdating = await postsRepository.updatePost(req.params.id, req.body.title,
         req.body.shortDescription, req.body.content, req.body.blogId)
