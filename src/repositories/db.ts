@@ -14,10 +14,9 @@ export type PostsType = {
     blogName: string
     createdAt: string
 }
-import 'dotenv/config'
 import {MongoClient} from "mongodb";
 
-const mongoUri = process.env.MONGOURI || "mongodb+srv://admi:nsiGWDTJSaVlJeRI@clusterforhometask.hhlpraq.mongodb.net/?retryWrites=true&w=majority"
+const mongoUri = process.env.MONGOURI || ""
 
 const client = new MongoClient(mongoUri)
 export const db = client.db("hometask3")

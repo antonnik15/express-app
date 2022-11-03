@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from "express"
 import bodyParser from "body-parser"
 import {runDb} from "./repositories/db";
@@ -6,7 +7,7 @@ import {postsRouter} from "./routes/posts-router";
 import {deleteRouter} from "./routes/delete-all-data";
 
 const app = express();
-const port = process.env.PORT;
+const port = 3000 || process.env.PORT;
 
 app.use(bodyParser());
 app.use("/blogs", blogsRouter)
