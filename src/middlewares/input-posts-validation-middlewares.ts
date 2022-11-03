@@ -28,7 +28,7 @@ export const inputPostsValidationMiddlewares = [
 ]
 export const isValidBlogId = body("blogId").custom(async blogId => {
     const blog = await blogsRepository.findBlogById(blogId)
-    if (blog) {
+    if (blog && blog.id === blogId) {
         return true;
     }
 }).withMessage({
