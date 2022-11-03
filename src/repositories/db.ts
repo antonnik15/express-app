@@ -18,7 +18,7 @@ export type PostsType = {
 
 import {MongoClient} from "mongodb";
 
-const mongoUri = "mongodb+srv://admin:ie0viPkKZajs8o24@clusterforhometask.hhlpraq.mongodb.net/?retryWrites=true&w=majority"
+const mongoUri = process.env.mongoURI || "mongodb+srv://admin:nsiGWDTJSaVlJeRI@clusterforhometask.hhlpraq.mongodb.net/?retryWrites=true&w=majority"
 
 const client = new MongoClient(mongoUri)
 export const db = client.db("hometask3")
