@@ -15,7 +15,6 @@ export type PostsType = {
     createdAt: string
 }
 
-
 import {MongoClient} from "mongodb";
 
 const mongoUri = process.env.mongoURI || "mongodb+srv://admin:nsiGWDTJSaVlJeRI@clusterforhometask.hhlpraq.mongodb.net/?retryWrites=true&w=majority"
