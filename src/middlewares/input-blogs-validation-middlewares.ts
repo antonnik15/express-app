@@ -24,7 +24,7 @@ export const InputBlogsValidationMiddlewares = [body("youtubeUrl").trim()
 export const InputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.json({errorsMessages: errors.array().map(m => m.msg)})
+        return res.status(400).json({errorsMessages: errors.array().map(m => m.msg)})
     } else {
         next()
     }
