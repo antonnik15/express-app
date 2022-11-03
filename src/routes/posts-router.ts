@@ -24,7 +24,7 @@ postsRouter.post("/",
 })
 
 postsRouter.get("/:id", async (req: Request, res: Response) => {
-    const post = await postsRepository.findPostById(req.body.params)
+    const post = await postsRepository.findPostById(req.params.id)
     if (post) {
         res.status(200).send(post)
     } else {
