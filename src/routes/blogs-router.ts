@@ -1,16 +1,17 @@
 import {Request, Response, Router} from "express";
-import {blogsRepository} from "../repositories/blogs-repository";
 import {
     InputBlogsValidationMiddlewares,
     InputValidationMiddleware
 } from "../middlewares/input-blogs-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
+import {blogsService} from "../domain/blogs-service";
+import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
-    res.send(await blogsRepository.getAllBlogs())
+    res.send(await blogsQueryRepository.findAllBlogs())
 })
 
 blogsRouter.post("/",
@@ -18,11 +19,11 @@ blogsRouter.post("/",
     InputBlogsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
-    res.status(201).send(await blogsRepository.createNewBlogs(req.body.name, req.body.youtubeUrl))
+    res.status(201).send(await blogsService.createNewBlogs(req.body.name, req.body.youtubeUrl))
 })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
-    const blog = await blogsRepository.findBlogById(req.params.id)
+    const blog = await blogsQueryRepository.findBlogById(req.params.id)
     if (blog) {
         res.status(200).send(blog)
     } else {
@@ -35,7 +36,7 @@ blogsRouter.put('/:id',
     InputBlogsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
-    const result = await blogsRepository.updateBlogById(req.params.id, req.body.name, req.body.youtubeUrl)
+    const result = await blogsService.updateBlogById(req.params.id, req.body.name, req.body.youtubeUrl)
     if (result) {
         res.sendStatus(204)
     } else {
@@ -46,7 +47,7 @@ blogsRouter.put('/:id',
 blogsRouter.delete('/:id',
     BasicAuthorization,
     async (req: Request, res: Response) => {
-    const resultOfDelete = await blogsRepository.deleteBlogsById(req.params.id)
+    const resultOfDelete = await blogsService.deleteBlogsById(req.params.id)
     if (resultOfDelete) {
         res.sendStatus(204)
     } else {

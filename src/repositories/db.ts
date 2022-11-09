@@ -27,7 +27,7 @@ export async function runDb() {
     try {
         await client.connect()
         await client.db("hometask3").command({ping: 1})
-        console.log("Connected successfully to mongo service")
+        console.log(`Connected successfully to mongo service on port ${mongoUri}`)
     } catch {
         console.log("can't connect to mongodb server")
         await client.close()

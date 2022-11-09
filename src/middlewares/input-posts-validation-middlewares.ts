@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogsRepository} from "../repositories/blogs-repository";
+import {blogsRepository} from "../repositories/blogs-repositories/blogs-repository";
 
 export const inputPostsValidationMiddlewares = [
     body("title").trim().isString().withMessage({
@@ -8,8 +8,7 @@ export const inputPostsValidationMiddlewares = [
     }).isLength({min: 1, max: 30}).withMessage({
         "message": "title length is more than 30 symbols",
         "field": "title"
-    }),
-    body("shortDescription").trim().isString().withMessage({
+    }), body("shortDescription").trim().isString().withMessage({
         "message": "shortDescription is not a string",
         "field": "shortDescription"
     }).isLength({min: 1, max: 100}).withMessage({
