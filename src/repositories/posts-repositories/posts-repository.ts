@@ -1,9 +1,9 @@
 import {postsCollection, PostsType} from "../db";
 
 export const postsRepository = {
-    async createPost(post: PostsType) : Promise<boolean> {
+    async createPost(post: PostsType) : Promise<string> {
         await postsCollection.insertOne(post)
-        return true
+        return post.id
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) : Promise<number>{
         const resultOfUpdatingPost = await postsCollection.updateOne({id: id},
