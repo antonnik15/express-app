@@ -16,7 +16,7 @@ export type PostsType = {
 }
 import {MongoClient} from "mongodb";
 
-const mongoUri = process.env.MONGOURI || ""
+const mongoUri = process.env.MONGOURI || 'mongodb://127.0.0.1:27017'
 
 const client = new MongoClient(mongoUri)
 export const db = client.db("hometask3")
