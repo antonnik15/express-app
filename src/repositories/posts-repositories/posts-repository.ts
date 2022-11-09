@@ -14,6 +14,10 @@ export const postsRepository = {
     async deletePostById(id: string) : Promise<number>{
         const resultOfDelete = await postsCollection.deleteOne({id: id})
         return resultOfDelete.deletedCount;
+    },
+    async createPostForCertainBlog(post: PostsType): Promise<string> {
+        await postsCollection.insertOne(post)
+        return post.id;
     }
 }
 

@@ -6,11 +6,20 @@ import {BasicAuthorization} from "../middlewares/authorization";
 import {InputValidationMiddleware} from "../middlewares/input-blogs-validation-middlewares";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
+import {queryObj} from "../repositories/blogs-repositories/blogs-query-repository";
+
 
 export const postsRouter = Router()
 
 postsRouter.get("/", async (req: Request, res: Response) => {
-    res.status(200).send(await postsQueryRepository.findAllPosts())
+    const query = req.query
+    const queryParams: queryObj = {
+        pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
+        pageSize: query.pageSize ? +query.pageSize : 10,
+        sortBy: query.sortBy ? query.sortBy.toString() : "createdAt",
+        sortDirection: (query.sortDirection === "desc") ? "desc" : "asc"
+    }
+    res.status(200).send(await postsQueryRepository.findAllPosts(queryParams))
 })
 
 postsRouter.post("/",
@@ -56,3 +65,4 @@ postsRouter.delete("/:id",
         res.sendStatus(404)
     }
 })
+

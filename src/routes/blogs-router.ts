@@ -1,17 +1,28 @@
-import {Request, Response, Router} from "express";
+import { Request, Response, Router} from "express";
 import {
     InputBlogsValidationMiddlewares,
     InputValidationMiddleware
 } from "../middlewares/input-blogs-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
 import {blogsService} from "../domain/blogs-service";
-import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
+import {blogsQueryRepository, queryObj} from "../repositories/blogs-repositories/blogs-query-repository";
+import {inputPostsValidationMiddlewares} from "../middlewares/input-posts-validation-middlewares";
+import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
+import {postsService} from "../domain/posts-service";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
-    res.send(await blogsQueryRepository.findAllBlogs())
+    const query = req.query;
+    const queryParams: queryObj = {
+        searchNameTerm: (query.searchNameTerm) ? new RegExp(query.searchNameTerm.toString()) : null,
+        pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
+        pageSize: (query.pageSize) ? +query.pageSize : 10,
+        sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
+        sortDirection: (query.sortDirection === 'desc') ? "desc" : "asc"
+    }
+    res.send(await blogsQueryRepository.findAllBlogs(queryParams))
 })
 
 blogsRouter.post("/",
@@ -56,3 +67,31 @@ blogsRouter.delete('/:id',
     }
 })
 
+blogsRouter.post("/:blogId/posts",
+    BasicAuthorization,
+    inputPostsValidationMiddlewares.splice(2, 2),
+    InputValidationMiddleware,
+    async (req: Request, res: Response) => {
+        if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
+            const createdPostId = await postsService.createPostForCertainBlog(req.params.blogId, req.body.title,
+                req.body.shortDescription, req.body.content)
+            res.status(201).send(await postsQueryRepository.findPostById(createdPostId))
+        } else {
+            res.sendStatus(404)
+        }
+    })
+
+blogsRouter.get("/:blogId/posts", async (req: Request, res: Response) => {
+    if(await blogsQueryRepository.findBlogById(req.params.blogId)) {
+        const query = req.query
+        const queryParams: queryObj = {
+            pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
+            pageSize: (query.pageSize) ? +query.pageSize : 10,
+            sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
+            sortDirection: (query.sortDirection === "desc") ? "desc" : "asc"
+        }
+        res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, queryParams))
+    } else {
+        res.sendStatus(404)
+    }
+})
