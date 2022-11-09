@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogsRepository} from "../repositories/blogs-repositories/blogs-repository";
+import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
 
 export const inputPostsValidationMiddlewares = [
     body("title").trim().isString().withMessage({
@@ -24,7 +24,7 @@ export const inputPostsValidationMiddlewares = [
         "message": "blogId is not a string",
         "field": "blogId"
     }), body("blogId").custom(async (id) => {
-        const blog = await blogsRepository.findBlogById(id)
+        const blog = await blogsQueryRepository.findBlogById(id)
         if (blog) {
             return true;
         } else {
