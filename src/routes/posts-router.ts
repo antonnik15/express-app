@@ -18,8 +18,9 @@ postsRouter.post("/",
     inputPostsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
-    res.status(201).send(await postsService.createPost(req.body.title, req.body.shortDescription,
-        req.body.content, req.body.blogId))
+    const postId = await postsService.createPost(req.body.title, req.body.shortDescription,
+        req.body.content, req.body.blogId)
+    res.status(201).send(await postsQueryRepository.findPostById(postId))
 })
 
 postsRouter.get("/:id", async (req: Request, res: Response) => {

@@ -1,8 +1,8 @@
 import {postsRepository} from "../repositories/posts-repositories/posts-repository";
-import {PostsType} from "../repositories/db";
+
 
 export const postsService = {
-    async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<PostsType | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<string> {
         const newPost = {
             id: (+new Date()).toString(),
             title: title,

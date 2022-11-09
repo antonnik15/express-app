@@ -1,9 +1,7 @@
 import {blogsRepository} from "../repositories/blogs-repositories/blogs-repository";
-import {BlogsType} from "../repositories/db";
-
 
 export const blogsService = {
-    async createNewBlogs(name: string, youtubeUrl: string) : Promise<BlogsType | null> {
+    async createNewBlogs(name: string, youtubeUrl: string) : Promise<string> {
         const newBlogs = {
             id: (+new Date()).toString(),
             name: name,

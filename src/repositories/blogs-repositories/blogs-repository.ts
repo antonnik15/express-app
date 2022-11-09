@@ -2,9 +2,9 @@ import {blogsCollection, BlogsType} from "../db";
 
 
 export const blogsRepository = {
-    async createNewBlogs(blog: BlogsType): Promise<BlogsType | null> {
+    async createNewBlogs(blog: BlogsType): Promise<string> {
         await blogsCollection.insertOne(blog)
-        return blogsCollection.findOne({id: blog.id}, {projection: {_id: 0}})
+        return blog.id
     },
    async updateBlogById(id: string, name: string, youtubeUrl: string) : Promise<number> {
         const result = await blogsCollection.updateOne({id: id},
