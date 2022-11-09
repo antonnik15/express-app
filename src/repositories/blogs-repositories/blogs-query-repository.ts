@@ -9,9 +9,11 @@ export const blogsQueryRepository = {
             return this.mapDbBlogTypeToOutputBlogType(blog)
         })
     },
-    async findBlogById(id: string): Promise<outputBlogType | null> {
+    async findBlogById(id: string): Promise<outputBlogType | undefined> {
         const blogById: DbBlogType | null = await blogsCollection.findOne({id: id})
-        return this.mapDbBlogTypeToOutputBlogType(blogById!)
+        if(blogById) {
+            return this.mapDbBlogTypeToOutputBlogType(blogById)
+        }
     },
     mapDbBlogTypeToOutputBlogType(dbBlog: DbBlogType): outputBlogType {
         return {

@@ -8,9 +8,11 @@ export const postsQueryRepository = {
             return this.mapDbPostToOutPutPostType(post)
         });
     },
-    async findPostById(id: string): Promise<OutPutPostType | null> {
+    async findPostById(id: string): Promise<OutPutPostType | undefined> {
         const dbPostById: DbPostType | null =  await postsCollection.findOne({id: id})
-        return this.mapDbPostToOutPutPostType(dbPostById!)
+        if(dbPostById) {
+            return this.mapDbPostToOutPutPostType(dbPostById)
+        }
     },
     mapDbPostToOutPutPostType(dbPost: DbPostType) {
         return {
