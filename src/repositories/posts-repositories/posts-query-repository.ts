@@ -5,8 +5,12 @@ export const postsQueryRepository = {
     async findAllPosts(queryParams: queryObj) {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
 
-        const dbPosts: DbPostType[] = await postsCollection.find({}).skip(countOfSkipElem).limit(queryParams.pageSize)
-            .sort(queryParams.sortBy, queryParams.sortDirection).toArray()
+        const dbPosts: DbPostType[] = await postsCollection
+            .find({})
+            .sort(queryParams.sortBy, queryParams.sortDirection)
+            .skip(countOfSkipElem)
+            .limit(queryParams.pageSize)
+            .toArray()
         const postsArrayOutput: OutPutPostType[] = dbPosts.map((post) => {
             return this.mapDbPostToOutPutPostType(post)
         })
@@ -26,16 +30,20 @@ export const postsQueryRepository = {
     },
     async findPostsForCertainBlog(blogId: string, queryParams: queryObj) {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
-        const dbCertainPosts: DbPostType[] = await postsCollection.find({blogId: blogId}).skip(countOfSkipElem)
-            .limit(queryParams.pageSize).sort(queryParams.sortBy, queryParams.sortDirection).toArray()
+        const dbCertainPosts: DbPostType[] = await postsCollection
+            .find({blogId: blogId})
+            .sort(queryParams.sortBy, queryParams.sortDirection)
+            .skip(countOfSkipElem)
+            .limit(queryParams.pageSize).toArray()
         const postsArray: OutPutPostType[] = dbCertainPosts.map((post) => {
             return this.mapDbPostToOutPutPostType(post)
         })
         return {
-            pagesCount: Math.ceil(await postsCollection.count({}) / queryParams.pageSize),
+            pagesCount: Math.ceil(await postsCollection.find({blogId: blogId})
+                .count({}) / queryParams.pageSize),
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
-            totalCount: await postsCollection.count({}),
+            totalCount: await postsCollection.find({blogId: blogId}).count({}),
             items: postsArray
         }
     },

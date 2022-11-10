@@ -90,7 +90,7 @@ blogsRouter.get("/:blogId/posts", async (req: Request, res: Response) => {
             pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
             pageSize: (query.pageSize) ? +query.pageSize : 10,
             sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-            sortDirection: (query.sortDirection == "desc") ? "desc" : "asc"
+            sortDirection: (query.sortDirection === "asc") ? "asc" : "desc"
         }
         res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, queryParams))
     } else {
