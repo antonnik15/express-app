@@ -22,7 +22,7 @@ blogsRouter.get("/", async (req: Request, res: Response) => {
         pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
         pageSize: (query.pageSize) ? +query.pageSize : 10,
         sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-        sortDirection: (query.sortDirection === "desc") ? -1 : 1,
+        sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
     }
     res.send(await blogsQueryRepository.findAllBlogs(queryParams))
 })
