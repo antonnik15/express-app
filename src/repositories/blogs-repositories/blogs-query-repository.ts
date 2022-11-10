@@ -11,8 +11,10 @@ export const blogsQueryRepository = {
         }
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize
 
-        const dbBlogs: DbBlogType[] = await blogsCollection.find(filter).skip(countOfSkipElem)
-            .limit(queryParams.pageSize).sort(queryParams.sortBy, queryParams.sortDirection).toArray()
+        const dbBlogs: DbBlogType[] = await blogsCollection.find(filter)
+            .sort(queryParams.sortBy, queryParams.sortDirection)
+            .skip(countOfSkipElem)
+            .limit(queryParams.pageSize).toArray()
 
         const blogArray: OutPutBlogType[] = dbBlogs.map((blog: DbBlogType) => {
             return this.mapDbBlogTypeToOutputBlogType(blog)
