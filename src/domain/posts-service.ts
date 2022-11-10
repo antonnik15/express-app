@@ -1,4 +1,5 @@
 import {postsRepository} from "../repositories/posts-repositories/posts-repository";
+import {QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
 
 
 export const postsService = {
@@ -30,6 +31,14 @@ export const postsService = {
             blogName: "Travelling",
             createdAt: (new Date()).toISOString()
         }
-        return await postsRepository.createPostForCertainBlog(newPost)
+        return await postsRepository.createPost(newPost)
+    },
+    createQueryBlogsObject(query: any): QueryObjectType {
+        return {
+            pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
+            pageSize: (query.pageSize) ? +query.pageSize : 10,
+            sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
+            sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
+        }
     }
 }

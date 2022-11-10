@@ -7,7 +7,7 @@ import {postsRouter} from "./routes/posts-router";
 import {deleteRouter} from "./routes/delete-all-data";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(bodyParser());
 app.use("/blogs", blogsRouter)

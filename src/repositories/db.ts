@@ -1,3 +1,5 @@
+import { MongoClient} from "mongodb";
+
 export type BlogsType = {
     id: string
     name: string
@@ -14,7 +16,7 @@ export type PostsType = {
     blogName: string
     createdAt: string
 }
-import {MongoClient} from "mongodb";
+
 
 const mongoUri = process.env.MONGOURI || 'sdfsdf'
 

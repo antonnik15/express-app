@@ -5,7 +5,7 @@ import {
 } from "../middlewares/input-blogs-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/authorization";
 import {blogsService} from "../domain/blogs-service";
-import {blogsQueryRepository, queryObj} from "../repositories/blogs-repositories/blogs-query-repository";
+import {blogsQueryRepository, QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
 import {
     inputPostsValidationMiddlewaresForCreatingCertain
 } from "../middlewares/input-posts-validation-middlewares";
@@ -16,15 +16,8 @@ import {postsService} from "../domain/posts-service";
 export const blogsRouter = Router({})
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
-    const query = req.query;
-    const queryParams: queryObj = {
-        searchNameTerm: (query.searchNameTerm) ? query.searchNameTerm.toString() : null,
-        pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
-        pageSize: (query.pageSize) ? +query.pageSize : 10,
-        sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-        sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
-    }
-    res.send(await blogsQueryRepository.findAllBlogs(queryParams))
+    const queryObjectParams: QueryObjectType = blogsService.createQueryBlogsObject(req.query)
+    res.send(await blogsQueryRepository.findAllBlogs(queryObjectParams))
 })
 
 blogsRouter.post("/",
@@ -85,14 +78,8 @@ blogsRouter.post("/:blogId/posts",
 
 blogsRouter.get("/:blogId/posts", async (req: Request, res: Response) => {
     if(await blogsQueryRepository.findBlogById(req.params.blogId)) {
-        const query = req.query
-        const queryParams: queryObj = {
-            pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
-            pageSize: (query.pageSize) ? +query.pageSize : 10,
-            sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-            sortDirection: (query.sortDirection === "asc") ? "asc" : "desc"
-        }
-        res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, queryParams))
+        const queryObjectParams: QueryObjectType = blogsService.createQueryBlogsObject(req.query)
+        res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, queryObjectParams))
     } else {
         res.sendStatus(404)
     }

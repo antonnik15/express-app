@@ -3,7 +3,7 @@ import {ObjectId, SortDirection} from "mongodb";
 
 
 export const blogsQueryRepository = {
-    async findAllBlogs(queryParams: queryObj) {
+    async findAllBlogs(queryParams: QueryObjectType) {
         let filter: any = {};
         if (queryParams.searchNameTerm) {
             filter.name = {$regex: queryParams.searchNameTerm, $options:"i"}
@@ -56,7 +56,7 @@ type DbBlogType ={
     createdAt: string
 }
 
-export type queryObj = {
+export type QueryObjectType = {
     searchNameTerm?: string | null
     pageNumber: number
     pageSize: number

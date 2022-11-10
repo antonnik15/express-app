@@ -56,7 +56,8 @@ export const postsQueryRepository = {
             blogName: dbPost!.blogName,
             createdAt: dbPost!.createdAt
         }
-    }
+    },
+
 }
 
 type DbPostType = {
