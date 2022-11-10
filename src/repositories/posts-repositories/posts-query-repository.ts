@@ -6,7 +6,8 @@ export const postsQueryRepository = {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
         const dbPosts: DbPostType[] = await postsCollection
             .find({})
-            .sort({[queryParams.sortBy]: queryParams.sortDirection})
+            .sort((queryParams.sortBy !== "blogName") ? {[queryParams.sortBy]: queryParams.sortDirection}
+                : {"createdAt": queryParams.sortDirection})
             .skip(countOfSkipElem)
             .limit(queryParams.pageSize)
             .toArray()
