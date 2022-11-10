@@ -16,7 +16,7 @@ postsRouter.get("/", async (req: Request, res: Response) => {
     const queryParams: queryObj = {
         pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
         pageSize: query.pageSize ? +query.pageSize : 10,
-        sortBy: query.sortBy ? query.sortBy.toString() : "createdAt",
+        sortBy: (query.sortBy && query.sortBy !== "blogName")  ? query.sortBy.toString() : "createdAt",
         sortDirection: (query.sortDirection === "asc") ? "asc" : "desc"
     }
     res.status(200).send(await postsQueryRepository.findAllPosts(queryParams))

@@ -4,10 +4,9 @@ import {ObjectId, SortDirection} from "mongodb";
 export const postsQueryRepository = {
     async findAllPosts(queryParams: queryObj) {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
-
         const dbPosts: DbPostType[] = await postsCollection
             .find({})
-            .sort(queryParams.sortBy, queryParams.sortDirection)
+            .sort({[queryParams.sortBy]: queryParams.sortDirection})
             .skip(countOfSkipElem)
             .limit(queryParams.pageSize)
             .toArray()
