@@ -69,7 +69,7 @@ blogsRouter.delete('/:id',
 
 blogsRouter.post("/:blogId/posts",
     BasicAuthorization,
-    inputPostsValidationMiddlewares.splice(2, 2),
+    inputPostsValidationMiddlewares,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
         if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
