@@ -36,4 +36,6 @@ export const inputPostsValidationMiddlewares = [
     })
 ]
 
+export const inputPostsValidationMiddlewaresForCreatingCertainPost = inputPostsValidationMiddlewares.splice(2, 2)
+
 

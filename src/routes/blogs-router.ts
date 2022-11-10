@@ -6,7 +6,9 @@ import {
 import {BasicAuthorization} from "../middlewares/authorization";
 import {blogsService} from "../domain/blogs-service";
 import {blogsQueryRepository, queryObj} from "../repositories/blogs-repositories/blogs-query-repository";
-import {inputPostsValidationMiddlewares} from "../middlewares/input-posts-validation-middlewares";
+import {
+    inputPostsValidationMiddlewaresForCreatingCertainPost
+} from "../middlewares/input-posts-validation-middlewares";
 import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {postsService} from "../domain/posts-service";
 
@@ -69,7 +71,7 @@ blogsRouter.delete('/:id',
 
 blogsRouter.post("/:blogId/posts",
     BasicAuthorization,
-    inputPostsValidationMiddlewares,
+    inputPostsValidationMiddlewaresForCreatingCertainPost,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
         if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
