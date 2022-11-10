@@ -18,10 +18,10 @@ export const blogsQueryRepository = {
             return this.mapDbBlogTypeToOutputBlogType(blog)
         })
         return {
-            pagesCount: Math.ceil(await blogsCollection.count({}) / queryParams.pageSize),
+            pagesCount: Math.ceil(dbBlogs.length / queryParams.pageSize),
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
-            totalCount: await blogsCollection.count({}),
+            totalCount: dbBlogs.length,
             items: blogArray
         }
     },
