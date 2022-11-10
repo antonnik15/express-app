@@ -4,15 +4,13 @@ import {ObjectId, SortDirection} from "mongodb";
 
 export const blogsQueryRepository = {
     async findAllBlogs(queryParams: queryObj) {
-
         let filter: any = {};
         if (queryParams.searchNameTerm) {
             filter.name = {$regex: queryParams.searchNameTerm}
         }
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize
-
         const dbBlogs: DbBlogType[] = await blogsCollection.find(filter)
-            .sort(queryParams.sortBy, queryParams.sortDirection)
+            .sort({[queryParams.sortBy] : queryParams.sortDirection})
             .skip(countOfSkipElem)
             .limit(queryParams.pageSize).toArray()
 
