@@ -21,7 +21,16 @@ export const blogsQueryRepository = {
             pagesCount: Math.ceil(await blogsCollection.count({}) / queryParams.pageSize),
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
-            totalCount: await blogsCollection.count({}),
+            totalCount: await blogsCollection.aggregate([
+                {
+                    $match: {
+                        name: filter
+                    }
+                },
+                {
+                    $count: ''
+                }
+            ]),
             items: blogArray
         }
     },

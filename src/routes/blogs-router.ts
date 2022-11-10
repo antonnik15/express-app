@@ -7,7 +7,7 @@ import {BasicAuthorization} from "../middlewares/authorization";
 import {blogsService} from "../domain/blogs-service";
 import {blogsQueryRepository, queryObj} from "../repositories/blogs-repositories/blogs-query-repository";
 import {
-    inputPostsValidationMiddlewaresForCreatingCertainPost
+    inputPostsValidationMiddlewaresForCreatingCertain
 } from "../middlewares/input-posts-validation-middlewares";
 import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {postsService} from "../domain/posts-service";
@@ -22,7 +22,7 @@ blogsRouter.get("/", async (req: Request, res: Response) => {
         pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
         pageSize: (query.pageSize) ? +query.pageSize : 10,
         sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-        sortDirection: (query.sortDirection === 'desc') ? "desc" : "asc"
+        sortDirection: (query.sortDirection == 'desc') ? "desc" : "asc"
     }
     res.send(await blogsQueryRepository.findAllBlogs(queryParams))
 })
@@ -71,7 +71,7 @@ blogsRouter.delete('/:id',
 
 blogsRouter.post("/:blogId/posts",
     BasicAuthorization,
-    inputPostsValidationMiddlewaresForCreatingCertainPost,
+    inputPostsValidationMiddlewaresForCreatingCertain,
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
         if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
@@ -90,7 +90,7 @@ blogsRouter.get("/:blogId/posts", async (req: Request, res: Response) => {
             pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
             pageSize: (query.pageSize) ? +query.pageSize : 10,
             sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-            sortDirection: (query.sortDirection === "desc") ? "desc" : "asc"
+            sortDirection: (query.sortDirection == "desc") ? "desc" : "asc"
         }
         res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, queryParams))
     } else {
