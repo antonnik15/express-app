@@ -14,7 +14,7 @@ export const postsQueryRepository = {
             pagesCount: Math.ceil(await postsCollection.count({}) / queryParams.pageSize),
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
-            totalCount: postsCollection.count({}),
+            totalCount: await postsCollection.count({}),
             items: postsArrayOutput
         }
     },
@@ -35,7 +35,7 @@ export const postsQueryRepository = {
             pagesCount: Math.ceil(await postsCollection.count({}) / queryParams.pageSize),
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
-            totalCount: postsCollection.count({}),
+            totalCount: await postsCollection.count({}),
             items: postsArray
         }
     },
