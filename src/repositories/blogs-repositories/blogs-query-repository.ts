@@ -57,7 +57,7 @@ type DbBlogType ={
 }
 
 export type queryObj = {
-    searchNameTerm?: RegExp | null
+    searchNameTerm?: string | null
     pageNumber: number
     pageSize: number
     sortBy: string

@@ -18,11 +18,11 @@ export const blogsRouter = Router({})
 blogsRouter.get("/", async (req: Request, res: Response) => {
     const query = req.query;
     const queryParams: queryObj = {
-        searchNameTerm: (query.searchNameTerm) ? new RegExp(query.searchNameTerm.toString()) : null,
+        searchNameTerm: (query.searchNameTerm) ? query.searchNameTerm.toString() : null,
         pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
         pageSize: (query.pageSize) ? +query.pageSize : 10,
         sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-        sortDirection: (query.sortDirection) ? "desc" : "asc",
+        sortDirection: (query.sortDirection === "desc") ? -1 : 1,
     }
     res.send(await blogsQueryRepository.findAllBlogs(queryParams))
 })
