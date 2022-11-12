@@ -68,9 +68,9 @@ blogsRouter.post("/:blogId/posts",
     InputValidationMiddleware,
     async (req: Request, res: Response) => {
         if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
-            const createdPostId = await postsService.createPostForCertainBlog(req.params.blogId, req.body.title,
-                req.body.shortDescription, req.body.content)
-            res.status(201).send(await postsQueryRepository.findPostById(createdPostId))
+            const createdPostForSpecificBlog = await postsService.createPost(req.body.title,
+                req.body.shortDescription, req.body.content, req.params.blogId)
+            res.status(201).send(await postsQueryRepository.findPostById(createdPostForSpecificBlog))
         } else {
             res.sendStatus(404)
         }

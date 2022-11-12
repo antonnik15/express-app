@@ -2,6 +2,7 @@ import {postsCollection} from "../db";
 import {ObjectId, SortDirection} from "mongodb";
 
 export const postsQueryRepository = {
+
     async findAllPosts(queryParams: queryObj) {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
         const dbPosts: DbPostType[] = await postsCollection
@@ -14,20 +15,16 @@ export const postsQueryRepository = {
         const postsArrayOutput: OutPutPostType[] = dbPosts.map((post) => {
             return this.mapDbPostToOutPutPostType(post)
         })
-        return {
-            pagesCount: Math.ceil(await postsCollection.count({}) / queryParams.pageSize),
-            page: queryParams.pageNumber,
-            pageSize: queryParams.pageSize,
-            totalCount: await postsCollection.count({}),
-            items: postsArrayOutput
-        }
+        return await this.createOfOutputObject({}, queryParams, postsArrayOutput)
     },
+
     async findPostById(id: string): Promise<OutPutPostType | undefined> {
         const dbPostById: DbPostType | null =  await postsCollection.findOne({id: id})
         if(dbPostById) {
             return this.mapDbPostToOutPutPostType(dbPostById)
         }
     },
+
     async findPostsForCertainBlog(blogId: string, queryParams: queryObj) {
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize;
         const dbCertainPosts: DbPostType[] = await postsCollection
@@ -38,15 +35,9 @@ export const postsQueryRepository = {
         const postsArray: OutPutPostType[] = dbCertainPosts.map((post) => {
             return this.mapDbPostToOutPutPostType(post)
         })
-        return {
-            pagesCount: Math.ceil(await postsCollection.find({blogId: blogId})
-                .count({}) / queryParams.pageSize),
-            page: queryParams.pageNumber,
-            pageSize: queryParams.pageSize,
-            totalCount: await postsCollection.find({blogId: blogId}).count({}),
-            items: postsArray
-        }
+        return this.createOfOutputObject({blogId: blogId}, queryParams, postsArray)
     },
+
     mapDbPostToOutPutPostType(dbPost: DbPostType) {
         return {
             id: dbPost!.id,
@@ -58,6 +49,17 @@ export const postsQueryRepository = {
             createdAt: dbPost!.createdAt
         }
     },
+
+    async createOfOutputObject(filter: Object, queryParams: queryObj, array: OutPutPostType[]): Promise<OutputObjectWithPaginationType>{
+        return {
+            pagesCount: Math.ceil(await postsCollection.find(filter)
+                .count({}) / queryParams.pageSize),
+            page: queryParams.pageNumber,
+            pageSize: queryParams.pageSize,
+            totalCount: await postsCollection.find(filter).count({}),
+            items: array
+        }
+    }
 
 }
 
@@ -85,5 +87,13 @@ type queryObj = {
     pageSize: number
     sortBy: string
     sortDirection: SortDirection
+}
+
+type OutputObjectWithPaginationType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: Array<OutPutPostType>
 }
 
