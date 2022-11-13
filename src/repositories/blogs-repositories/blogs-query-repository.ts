@@ -6,7 +6,7 @@ export const blogsQueryRepository = {
     async findAllBlogs(queryParams: QueryObjectType) {
         let filter: any = {};
         if (queryParams.searchNameTerm) {
-            filter.name = {$regex: queryParams.searchNameTerm, $options:"i"}
+            filter.name = {$regex: queryParams.searchNameTerm, $options: "i"}
         }
         const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize
         const dbBlogs: DbBlogType[] = await blogsCollection.find(filter)

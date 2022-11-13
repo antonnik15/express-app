@@ -1,5 +1,6 @@
-import {body} from "express-validator";
+import {body, validationResult} from "express-validator";
 import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
+import {NextFunction, Request, Response} from "express";
 
 export const inputPostsValidationMiddlewares = [
     body("title").trim().isString().withMessage({
@@ -56,6 +57,15 @@ export const inputPostsValidationMiddlewaresForCreatingCertain = [
         "message": "content length is more than 100 symbols",
         "field": "content"
     })
-]
+];
+
+export const inputPostsValidationResult = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).send({errorsMessages: errors.array().map(err => err.msg)})
+    } else {
+        next()
+    }
+}
 
 

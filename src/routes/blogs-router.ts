@@ -1,9 +1,9 @@
 import { Request, Response, Router} from "express";
 import {
     InputBlogsValidationMiddlewares,
-    InputValidationMiddleware
+    InputBlogsValidationResult
 } from "../middlewares/input-blogs-validation-middlewares";
-import {BasicAuthorization} from "../middlewares/authorization";
+import {BasicAuthorization} from "../middlewares/basic-authorization";
 import {blogsService} from "../domain/blogs-service";
 import {blogsQueryRepository, QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
 import {
@@ -23,7 +23,7 @@ blogsRouter.get("/", async (req: Request, res: Response) => {
 blogsRouter.post("/",
     BasicAuthorization,
     InputBlogsValidationMiddlewares,
-    InputValidationMiddleware,
+    InputBlogsValidationResult,
     async (req: Request, res: Response) => {
     const blogId = await blogsService.createNewBlogs(req.body.name, req.body.youtubeUrl)
     res.status(201).send(await blogsQueryRepository.findBlogById(blogId))
@@ -41,7 +41,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 blogsRouter.put('/:id',
     BasicAuthorization,
     InputBlogsValidationMiddlewares,
-    InputValidationMiddleware,
+    InputBlogsValidationResult,
     async (req: Request, res: Response) => {
     const result = await blogsService.updateBlogById(req.params.id, req.body.name, req.body.youtubeUrl)
     if (result) {
@@ -65,7 +65,7 @@ blogsRouter.delete('/:id',
 blogsRouter.post("/:blogId/posts",
     BasicAuthorization,
     inputPostsValidationMiddlewaresForCreatingCertain,
-    InputValidationMiddleware,
+    InputBlogsValidationResult,
     async (req: Request, res: Response) => {
         if (await blogsQueryRepository.findBlogById(req.params.blogId)) {
             const createdPostForSpecificBlog = await postsService.createPost(req.body.title,

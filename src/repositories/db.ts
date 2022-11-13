@@ -17,13 +17,20 @@ export type PostsType = {
     createdAt: string
 }
 
-
+export type UsersType = {
+    id: string
+    login: string
+    password: string
+    email: string
+    createdAt: string
+}
 const mongoUri = process.env.MONGOURI || 'sdfsdf'
 
 const client = new MongoClient(mongoUri)
 export const db = client.db("hometask3")
 export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
+export const usersCollection = db.collection<UsersType>("users")
 
 export async function runDb() {
     try {

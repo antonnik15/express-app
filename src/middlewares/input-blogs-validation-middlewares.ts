@@ -20,7 +20,7 @@ export const InputBlogsValidationMiddlewares = [body("youtubeUrl").trim()
         "message": "field name is not a string",
         "field": "name"
     })]
-export const InputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const InputBlogsValidationResult = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({errorsMessages: errors.array().map(m => m.msg)})

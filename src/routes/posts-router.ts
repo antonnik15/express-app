@@ -1,9 +1,8 @@
 import {Request, Response, Router} from "express";
 import {
-    inputPostsValidationMiddlewares,
+    inputPostsValidationMiddlewares, inputPostsValidationResult,
 } from "../middlewares/input-posts-validation-middlewares";
-import {BasicAuthorization} from "../middlewares/authorization";
-import {InputValidationMiddleware} from "../middlewares/input-blogs-validation-middlewares";
+import {BasicAuthorization} from "../middlewares/basic-authorization";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
@@ -19,7 +18,7 @@ postsRouter.get("/", async (req: Request, res: Response) => {
 postsRouter.post("/",
     BasicAuthorization,
     inputPostsValidationMiddlewares,
-    InputValidationMiddleware,
+    inputPostsValidationResult,
     async (req: Request, res: Response) => {
     const postId = await postsService.createPost(req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId)
@@ -38,7 +37,7 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
 postsRouter.put("/:id",
     BasicAuthorization,
     inputPostsValidationMiddlewares,
-    InputValidationMiddleware,
+    inputPostsValidationResult,
     async (req: Request, res: Response) => {
     const resultOfUpdating = await postsService.updatePost(req.params.id, req.body.title,
         req.body.shortDescription, req.body.content, req.body.blogId)
