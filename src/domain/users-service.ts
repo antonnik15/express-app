@@ -18,8 +18,8 @@ export const usersService = {
         return await usersRepository.createNewUser(newUser)
     },
     async deleteUserById(id: string) {
-        if (await usersRepository.deleteUserById(id)) return 204
-        else return 404
+        if (await usersRepository.deleteUserById(id)) return 204;
+        else return 404;
     },
     async checkCredentials(login: string, password: string) {
         const user = await usersQueryRepository.findUserByLogin(login);

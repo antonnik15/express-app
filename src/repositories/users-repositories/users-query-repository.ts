@@ -58,7 +58,7 @@ export const usersQueryRepository = {
             pagesCount: Math.ceil(await usersCollection.count(filter) / pageSize),
             page: pageNumber,
             pageSize: pageSize,
-            totalCount: await usersCollection.count(filter) / pageSize,
+            totalCount: await usersCollection.count(filter) / +pageSize,
             items: usersArray
         }
     },
