@@ -2,10 +2,10 @@ import {ObjectId, SortDirection} from "mongodb";
 import {usersCollection} from "../db";
 
 export const usersQueryRepository = {
-    async findAllUsers(pageNumber: string,
-                       pageSize: string,
-                       sortBy: string,
-                       sortDirection: SortDirection,
+    async findAllUsers(pageNumber: string | undefined = '1',
+                       pageSize: string | undefined = '10',
+                       sortBy: string | undefined = 'createdAt',
+                       sortDirection: SortDirection = 'desc',
                        searchLoginTerm: undefined | string,
                        searchEmailTerm: undefined | string) {
         let filter = {}

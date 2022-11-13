@@ -3,6 +3,8 @@ import { usersQueryRepository} from "../repositories/users-repositories/users-qu
 import {BasicAuthorization} from "../middlewares/basic-authorization";
 import {usersService} from "../domain/users-service";
 import {inputUsersValidationMiddlewares, inputUsersValidationResult} from "../middlewares/input-users-validation-middlewares";
+import {SortDirection} from "mongodb";
+
 
 
 export const usersRouter = Router({})
@@ -12,12 +14,12 @@ usersRouter.get("/",
     async (req: Request, res: Response) => {
         const query = req.query;
         res.status(200).send(await usersQueryRepository.findAllUsers(
-            query.pageNumber = '1',
-            query.pageSize = '10',
-            query.sortBy = 'createdAt',
-            query.sortDirection = 'desc',
-            query.searchLoginTerm = undefined,
-            query.searchEmailTerm = undefined
+            query.pageNumber as string | undefined,
+            query.pageSize as string | undefined,
+            query.sortBy as string | undefined,
+            query.sortDirection as SortDirection | undefined,
+            query.searchLoginTerm as undefined | string,
+            query.searchEmailTerm as undefined | string
         ))
     })
 
@@ -36,5 +38,4 @@ usersRouter.delete('/:id',
     async (req: Request, res: Response) => {
         res.sendStatus(await usersService.deleteUserById(req.params.id))
     })
-
 
