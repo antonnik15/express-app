@@ -5,7 +5,7 @@ import {
     inputUsersValidationResult
 } from "../middlewares/input-users-validation-middlewares";
 
-const authRouter = Router({})
+export const authRouter = Router({})
 
 authRouter.post("/login",
     inputUsersValidationMiddlewaresForCheckCredentials,
