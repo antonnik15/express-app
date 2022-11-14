@@ -24,8 +24,10 @@ export const usersService = {
     async checkCredentials(login: string, password: string) {
         const user = await usersQueryRepository.findUserByLogin(login);
         if (!user) return 401;
-        const salt = user.password.substr(0, user.password.indexOf('/'));
-        if (await this._generateHash(password, salt) !== user.password) return 401;
+        const salt = user.password.substr(0, 29);
+        if (await this._generateHash(password, salt) !== user.password) {
+            return 401;
+        }
         return 204;
     },
     async _generateHash(password: string, salt: string) {
