@@ -25,10 +25,10 @@ export const usersService = {
         const user = await usersQueryRepository.findUserByLogin(login);
         if (!user) return 401;
         const salt = user.password.substr(0, 29);
-        if (!await bcrypt.compare(password, await this._generateHash(password, salt))) {
-            return 401;
+        if (await bcrypt.compare(password, await this._generateHash(password, salt))) {
+            return 204;
         }
-        return 204;
+        return 401;
     },
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
