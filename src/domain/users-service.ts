@@ -30,7 +30,7 @@ export const usersService = {
         }
         return 401;
     },
-    async _generateHash(password: string, salt: string): Promise<string> {
+    async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     }
 }
