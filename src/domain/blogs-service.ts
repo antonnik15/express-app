@@ -20,8 +20,8 @@ export const blogsService = {
     createQueryBlogsObject(query: any): QueryObjectType {
         return {
             searchNameTerm: (query.searchNameTerm) ? query.searchNameTerm.toString() : null,
-            pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
-            pageSize: (query.pageSize) ? +query.pageSize : 10,
+            pageNumber: (query.pageNumber) ? query.pageNumber : '1',
+            pageSize: (query.pageSize) ? query.pageSize : '10',
             sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
             sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
         }
