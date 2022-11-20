@@ -1,5 +1,7 @@
 import {postsRepository} from "../repositories/posts-repositories/posts-repository";
 import {QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
+import {OutPutUsersType} from "../repositories/users-repositories/users-query-repository";
+import {CommentsType} from "../repositories/db";
 
 
 export const postsService = {
@@ -23,10 +25,21 @@ export const postsService = {
     },
     createQueryBlogsObject(query: any): QueryObjectType {
         return {
-            pageNumber: (query.pageNumber) ? +query.pageNumber : 1,
-            pageSize: (query.pageSize) ? +query.pageSize : 10,
+            pageNumber: (query.pageNumber) ? query.pageNumber : '1',
+            pageSize: (query.pageSize) ? query.pageSize : '10',
             sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
             sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
         }
+    },
+    async createCommentForPost(postId: string, content: string, user: OutPutUsersType): Promise<CommentsType> {
+        const newComment: CommentsType = {
+            id: postId,
+            content: content,
+            userId: user.id,
+            userLogin: user.login,
+            createdAt: new Date().toISOString()
+        }
+        await postsRepository.createCommentForPost(newComment);
+        return newComment;
     }
 }

@@ -1,4 +1,4 @@
-import {postsCollection, PostsType} from "../db";
+import {commentsCollection, CommentsType, postsCollection, PostsType} from "../db";
 
 export const postsRepository = {
     async createPost(post: PostsType) : Promise<string> {
@@ -16,8 +16,9 @@ export const postsRepository = {
     async deletePostById(id: string): Promise<number> {
         const resultOfDelete = await postsCollection.deleteOne({id: id})
         return resultOfDelete.deletedCount;
+    },
+    async createCommentForPost(comment: CommentsType) {
+        await commentsCollection.insertOne(comment)
     }
 }
-
-
 

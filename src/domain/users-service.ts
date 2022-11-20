@@ -21,15 +21,13 @@ export const usersService = {
         if (await usersRepository.deleteUserById(id)) return 204;
         else return 404;
     },
-    async checkCredentials(login: string, password: string) {
-        const user = await usersQueryRepository.findUserByLogin(login);
-        if (!user) return 401;
-        const salt = user.password.substr(0, 29);
-        debugger;
+    async checkCredentials(loginOrEmail: string, password: string) {
+        const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail);
+        if (!user) return;
         if (await bcrypt.compare(password, user.password)) {
-            return 204;
+            return user;
         }
-        return 401;
+        return;
     },
     async _generateHash(password: string, salt: string){
         return await bcrypt.hash(password, salt)

@@ -4,6 +4,8 @@ import {
     inputUsersValidationMiddlewaresForCheckCredentials,
     inputUsersValidationResult
 } from "../middlewares/input-users-validation-middlewares";
+import {jwtService} from "../application/jwt-service";
+import {authMiddleware} from "../middlewares/auth-middleware";
 
 export const authRouter = Router({})
 
@@ -11,6 +13,21 @@ authRouter.post("/login",
     inputUsersValidationMiddlewaresForCheckCredentials,
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
-    const checkResult = await usersService.checkCredentials(req.body.login, req.body.password)
-    res.sendStatus(checkResult)
+    const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+    if (user) {
+        const token = await jwtService.createJWT(user)
+        res.status(200).send({accessToken: token})
+    } else {
+        res.sendStatus(401)
+    }
+})
+
+authRouter.get("/me",
+    authMiddleware,
+    async (req: Request, res: Response) => {
+    res.sendStatus(200).send({
+        email: req.user!.email,
+        login: req.user!.login,
+        userId: req.user!.id
+    })
 })

@@ -30,15 +30,16 @@ export const usersQueryRepository = {
             outPutArray)
 
     },
-    async findUserById(id: string) {
+    async findUserById(id: string): Promise<OutPutUsersType | null> {
         const user = await usersCollection.findOne({id: id});
         if (user) {
             return this.mapDbUsersTypeToOutputUsersType(user)
         }
+        return null;
     },
 
-    async findUserByLogin(login: string) {
-        return await usersCollection.findOne({login: login})
+    async findUserByLoginOrEmail(loginOrEmail: string) {
+        return await usersCollection.findOne({$or: [{login: loginOrEmail, email: loginOrEmail}]})
     },
 
     mapDbUsersTypeToOutputUsersType(dbUser: DbUsersType): OutPutUsersType {
@@ -64,7 +65,7 @@ export const usersQueryRepository = {
     },
 }
 
-type DbUsersType = {
+export type DbUsersType = {
     _id: ObjectId
     id: string
     login: string
@@ -74,7 +75,7 @@ type DbUsersType = {
 }
 
 
-type OutPutUsersType = {
+export type OutPutUsersType = {
     id: string
     login: string
     email: string

@@ -8,19 +8,19 @@ export const blogsQueryRepository = {
         if (queryParams.searchNameTerm) {
             filter.name = {$regex: queryParams.searchNameTerm, $options: "i"}
         }
-        const countOfSkipElem = (queryParams.pageNumber - 1) * queryParams.pageSize
+        const countOfSkipElem = (+queryParams.pageNumber - 1) * (+queryParams.pageSize)
         const dbBlogs: DbBlogType[] = await blogsCollection.find(filter)
             .sort({[queryParams.sortBy] : queryParams.sortDirection})
             .skip(countOfSkipElem)
-            .limit(queryParams.pageSize).toArray()
+            .limit(+queryParams.pageSize).toArray()
 
         const blogArray: OutPutBlogType[] = dbBlogs.map((blog: DbBlogType) => {
             return this.mapDbBlogTypeToOutputBlogType(blog)
         })
         return {
-            pagesCount: Math.ceil(await blogsCollection.find(filter).count({}) / queryParams.pageSize),
-            page: queryParams.pageNumber,
-            pageSize: queryParams.pageSize,
+            pagesCount: Math.ceil(await blogsCollection.find(filter).count({}) / (+queryParams.pageSize)),
+            page: +queryParams.pageNumber,
+            pageSize: +queryParams.pageSize,
             totalCount: await blogsCollection.find(filter).count({}),
             items: blogArray
         }
@@ -58,8 +58,8 @@ type DbBlogType ={
 
 export type QueryObjectType = {
     searchNameTerm?: string | null
-    pageNumber: number
-    pageSize: number
+    pageNumber: string
+    pageSize: string
     sortBy: string
     sortDirection: SortDirection
 }
