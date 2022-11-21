@@ -6,9 +6,10 @@ export const blogsRepository = {
         await blogsCollection.insertOne(blog)
         return blog.id
     },
-   async updateBlogById(id: string, name: string, youtubeUrl: string) : Promise<number> {
+   async updateBlogById(id: string, name: string, description: string,
+                        websiteUrl: string) : Promise<number> {
         const result = await blogsCollection.updateOne({id: id},
-            {$set: {name: name, youtubeUrl: youtubeUrl}})
+            {$set: {name: name, websiteUrl: websiteUrl, description: description}})
         return result.modifiedCount;
     },
     async deleteBlogsById(id: string) : Promise<number> {

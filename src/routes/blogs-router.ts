@@ -25,7 +25,7 @@ blogsRouter.post("/",
     InputBlogsValidationMiddlewares,
     InputBlogsValidationResult,
     async (req: Request, res: Response) => {
-    const blogId = await blogsService.createNewBlogs(req.body.name, req.body.youtubeUrl)
+    const blogId = await blogsService.createNewBlogs(req.body.name, req.body.description, req.body.websiteUrl)
     res.status(201).send(await blogsQueryRepository.findBlogById(blogId))
 })
 
@@ -43,7 +43,11 @@ blogsRouter.put('/:id',
     InputBlogsValidationMiddlewares,
     InputBlogsValidationResult,
     async (req: Request, res: Response) => {
-    const result = await blogsService.updateBlogById(req.params.id, req.body.name, req.body.youtubeUrl)
+    const result = await blogsService.updateBlogById(req.params.id,
+        req.body.name,
+        req.body.description,
+        req.body.websiteUrl)
+
     if (result) {
         res.sendStatus(204)
     } else {

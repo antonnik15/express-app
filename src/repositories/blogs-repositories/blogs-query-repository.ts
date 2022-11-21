@@ -35,7 +35,8 @@ export const blogsQueryRepository = {
         return {
             id: dbBlog.id,
             name: dbBlog.name,
-            youtubeUrl: dbBlog.youtubeUrl,
+            description: dbBlog.description,
+            websiteUrl: dbBlog.websiteUrl,
             createdAt: dbBlog.createdAt
         }
     }
@@ -44,7 +45,8 @@ export const blogsQueryRepository = {
 type OutPutBlogType ={
     id: string
     name: string
-    youtubeUrl: string
+    description: string
+    websiteUrl: string
     createdAt: string
 }
 
@@ -52,7 +54,8 @@ type DbBlogType ={
     _id: ObjectId
     id: string
     name: string
-    youtubeUrl: string
+    description: string
+    websiteUrl: string
     createdAt: string
 }
 

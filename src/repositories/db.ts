@@ -3,7 +3,8 @@ import { MongoClient} from "mongodb";
 export type BlogsType = {
     id: string
     name: string
-    youtubeUrl: string
+    description: string
+    websiteUrl: string
     createdAt: string
 }
 

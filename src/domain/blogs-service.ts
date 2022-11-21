@@ -2,17 +2,19 @@ import {blogsRepository} from "../repositories/blogs-repositories/blogs-reposito
 import {QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
 
 export const blogsService = {
-    async createNewBlogs(name: string, youtubeUrl: string) : Promise<string> {
+    async createNewBlogs(name: string,  description: string, websiteUrl: string) : Promise<string> {
         const newBlogs = {
             id: (+new Date()).toString(),
             name: name,
-            youtubeUrl: youtubeUrl,
+            description: description,
+            websiteUrl: websiteUrl,
             createdAt: (new Date()).toISOString()
         }
         return await blogsRepository.createNewBlogs(newBlogs)
     },
-    async updateBlogById(id: string, name: string, youtubeUrl: string) : Promise<number> {
-        return blogsRepository.updateBlogById(id, name, youtubeUrl)
+    async updateBlogById(id: string, name: string, description: string,
+                         websiteUrl: string) : Promise<number> {
+        return blogsRepository.updateBlogById(id, name, description, websiteUrl)
     },
     async deleteBlogsById(id: string) : Promise<number> {
         return blogsRepository.deleteBlogsById(id)
