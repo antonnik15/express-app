@@ -34,9 +34,9 @@ export type CommentsType = {
     createdAt: string
 }
 
-const mongoUri = process.env.MONGOURI || 'sdfsdf'
+const mongoUri = process.env.MONGOURI
 
-const client = new MongoClient(mongoUri)
+const client = new MongoClient(mongoUri!)
 export const db = client.db("hometask3")
 export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
