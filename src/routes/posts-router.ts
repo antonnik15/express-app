@@ -39,6 +39,7 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
     const post = await postsQueryRepository.findPostById(req.params.id)
     if (post) {
         res.status(200).send(post)
+        return;
     }
     res.sendStatus(404)
 })
@@ -56,6 +57,7 @@ postsRouter.put("/:id",
             req.body.blogId)
         if (resultOfChange) {
             res.sendStatus(204)
+            return;
         }
         res.sendStatus(404)
 
@@ -67,6 +69,7 @@ postsRouter.delete("/:id",
     const deletionResult = await postsService.deletePostById(req.params.id)
     if (deletionResult) {
         res.sendStatus(204)
+        return;
     }
     res.sendStatus(404)
 
@@ -84,6 +87,7 @@ postsRouter.post("/:postId/comments",
                 req.body.content,
                 req.user!);
             res.sendStatus(201).send(newComment);
+            return;
         }
         res.sendStatus(404)
     })
@@ -93,6 +97,7 @@ postsRouter.get("/:postId/comments", async (req: Request, res: Response) => {
     if (post) {
         const query = req.query;
         res.sendStatus(200).send(await postsQueryRepository.findCommentsForCertainPost(req.params.postId, query))
+        return;
     }
     else res.sendStatus(404);
 })

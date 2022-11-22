@@ -38,6 +38,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
     const blog = await blogsQueryRepository.findBlogById(req.params.id)
     if (blog) {
         res.status(200).send(blog)
+        return;
     }
     res.sendStatus(404)
 })
@@ -54,6 +55,7 @@ blogsRouter.put('/:id',
 
         if (resultOfChange) {
             res.sendStatus(204)
+            return;
         }
         res.sendStatus(404)
     })
@@ -64,6 +66,7 @@ blogsRouter.delete('/:id',
         const deletionResult = await blogsService.deleteBlogsById(req.params.id)
         if (deletionResult) {
             res.sendStatus(204)
+            return;
         }
         res.sendStatus(404)
 
@@ -81,6 +84,7 @@ blogsRouter.post("/:blogId/posts",
                 req.body.content,
                 req.params.blogId)
             res.status(201).send(await postsQueryRepository.findPostById(idOfCreatedPost))
+            return;
         }
         res.sendStatus(404)
     })
@@ -91,6 +95,7 @@ blogsRouter.get("/:blogId/posts",
         if (blog) {
             const query = req.query;
             res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, query))
+            return;
         }
         res.sendStatus(404)
     })
