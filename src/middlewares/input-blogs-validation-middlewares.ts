@@ -35,7 +35,7 @@ export const ValidationOfBlogsInputParameters = [
 export const InputBlogsValidationResult = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({errorsMessages: errors.array().map(m => m.msg)})
+        return res.status(400).send({errorsMessages: errors.array().map(m => m.msg)})
     } else {
         next()
     }

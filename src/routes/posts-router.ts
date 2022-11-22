@@ -18,7 +18,7 @@ export const postsRouter = Router()
 
 postsRouter.get("/", async (req: Request, res: Response) => {
     const query = req.query;
-    res.sendStatus(200).send(await postsQueryRepository.findAllPosts(query))
+    res.status(200).send(await postsQueryRepository.findAllPosts(query))
 })
 
 postsRouter.post("/",
@@ -86,7 +86,7 @@ postsRouter.post("/:postId/comments",
                 req.params.postId,
                 req.body.content,
                 req.user!);
-            res.sendStatus(201).send(newComment);
+            res.status(201).send(newComment);
             return;
         }
         res.sendStatus(404)
@@ -96,9 +96,9 @@ postsRouter.get("/:postId/comments", async (req: Request, res: Response) => {
     const post = await postsQueryRepository.findPostById(req.params.postId);
     if (post) {
         const query = req.query;
-        res.sendStatus(200).send(await postsQueryRepository.findCommentsForCertainPost(req.params.postId, query))
+        res.status(200).send(await postsQueryRepository.findCommentsForCertainPost(req.params.postId, query))
         return;
     }
-    else res.sendStatus(404);
+    res.sendStatus(404);
 })
 

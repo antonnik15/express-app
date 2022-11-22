@@ -7,5 +7,6 @@ deleteRouter.delete("/", async (req: Request, res: Response) => {
     const result = await db.dropDatabase()
     if (result) {
         res.sendStatus(204)
+        return;
     }
 })

@@ -18,7 +18,7 @@ export const blogsRouter = Router({})
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
     const query = req.query;
-    res.sendStatus(200).send(await blogsQueryRepository.findAllBlogs(query))
+    res.status(200).send(await blogsQueryRepository.findAllBlogs(query))
 })
 
 blogsRouter.post("/",
@@ -31,7 +31,7 @@ blogsRouter.post("/",
             req.body.description,
             req.body.websiteUrl)
 
-        res.sendStatus(201).send(await blogsQueryRepository.findBlogById(createdBlogId))
+        res.status(201).send(await blogsQueryRepository.findBlogById(createdBlogId))
     })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {

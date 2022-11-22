@@ -25,7 +25,7 @@ authRouter.post("/login",
 authRouter.get("/me",
     authMiddleware,
     async (req: Request, res: Response) => {
-    res.sendStatus(200).send({
+    res.status(200).send({
         email: req.user!.email,
         login: req.user!.login,
         userId: req.user!.id

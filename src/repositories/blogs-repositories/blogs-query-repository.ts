@@ -32,9 +32,7 @@ export const blogsQueryRepository = {
 
     async findBlogById(id: string): Promise<OutputBlogType | undefined> {
         const blogById: DbBlogType | null = await blogsCollection.findOne({id: id})
-        if(blogById) {
-            return this.mapDbBlogTypeToOutputBlogType(blogById)
-        }
+        if (blogById) return this.mapDbBlogTypeToOutputBlogType(blogById)
     },
 
     _createQueryParamsObject(query: any): QueryParamsType {
