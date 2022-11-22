@@ -8,7 +8,7 @@ import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {
-    inputCommentsValidationMiddleware, inputCommentsValidationResult
+    inputCommentsValidationResult
 } from "../middlewares/input-comments-validation-middlewares";
 import {CommentsType} from "../repositories/db";
 
@@ -74,7 +74,7 @@ postsRouter.delete("/:id",
 
 postsRouter.post("/:postId/comments",
     authMiddleware,
-    inputCommentsValidationMiddleware,
+    ValidationOfPostsInputParameters,
     inputCommentsValidationResult,
     async (req: Request, res: Response) => {
         const post = await postsQueryRepository.findPostById(req.params.postId);
