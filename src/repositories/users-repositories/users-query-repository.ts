@@ -39,7 +39,7 @@ export const usersQueryRepository = {
     },
 
     async findUserByLoginOrEmail(loginOrEmail: string) {
-        return await usersCollection.findOne({$or: [{login: loginOrEmail, email: loginOrEmail}]})
+        return await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
     },
 
     _createQueryParamsObject(query: any): QueryParamsType {
