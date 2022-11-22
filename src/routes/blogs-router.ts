@@ -31,7 +31,7 @@ blogsRouter.post("/",
             req.body.description,
             req.body.websiteUrl)
 
-        res.status(201).send(await blogsQueryRepository.findBlogById(createdBlogId))
+        res.sendStatus(201).send(await blogsQueryRepository.findBlogById(createdBlogId))
     })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
