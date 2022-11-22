@@ -1,5 +1,4 @@
 import {blogsRepository} from "../repositories/blogs-repositories/blogs-repository";
-import {QueryObjectType} from "../repositories/blogs-repositories/blogs-query-repository";
 
 export const blogsService = {
     async createNewBlogs(name: string,  description: string, websiteUrl: string) : Promise<string> {
@@ -10,22 +9,17 @@ export const blogsService = {
             websiteUrl: websiteUrl,
             createdAt: (new Date()).toISOString()
         }
-        return await blogsRepository.createNewBlogs(newBlogs)
+        await blogsRepository.createNewBlogs(newBlogs);
+        return newBlogs.id;
     },
-    async updateBlogById(id: string, name: string, description: string,
-                         websiteUrl: string) : Promise<number> {
+    async updateBlogById(id: string, name: string,
+                         description: string,
+                         websiteUrl: string): Promise<number> {
+
         return blogsRepository.updateBlogById(id, name, description, websiteUrl)
+
     },
-    async deleteBlogsById(id: string) : Promise<number> {
+    async deleteBlogsById(id: string): Promise<number> {
         return blogsRepository.deleteBlogsById(id)
-    },
-    createQueryBlogsObject(query: any): QueryObjectType {
-        return {
-            searchNameTerm: (query.searchNameTerm) ? query.searchNameTerm.toString() : null,
-            pageNumber: (query.pageNumber) ? query.pageNumber : '1',
-            pageSize: (query.pageSize) ? query.pageSize : '10',
-            sortBy: (query.sortBy) ? query.sortBy.toString() : "createdAt",
-            sortDirection: (query.sortDirection === 'asc') ? 'asc' : 'desc'
-        }
     }
 }

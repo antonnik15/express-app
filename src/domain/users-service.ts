@@ -5,9 +5,10 @@ export const usersService = {
     async createNewUser(login: string,
                         password: string,
                         email: string) : Promise<string> {
+
         const salt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, salt)
-        await console.log(salt)
+
         const newUser = {
             id: (+new Date()).toString(),
             login: login,
@@ -15,11 +16,12 @@ export const usersService = {
             email: email,
             createdAt: (new Date()).toISOString()
         }
-        return await usersRepository.createNewUser(newUser)
+
+        await usersRepository.createNewUser(newUser)
+        return newUser.id;
     },
     async deleteUserById(id: string) {
-        if (await usersRepository.deleteUserById(id)) return 204;
-        else return 404;
+        return await usersRepository.deleteUserById(id)
     },
     async checkCredentials(loginOrEmail: string, password: string) {
         const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail);

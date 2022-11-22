@@ -2,14 +2,18 @@ import {body, validationResult} from "express-validator";
 import {Response, Request, NextFunction} from "express";
 
 
-export const inputUsersValidationMiddlewares = [
+export const ValidationOfUsersInputParameters = [
     body("login").trim().isString().withMessage({
         "message": "login is not a string",
         "field": "login"
     }).isLength({min: 3, max: 10}).withMessage({
         "message": "length of login more than 10 or less than 3 symbols",
         "field": "login"
-    }), body('password').trim().isString().withMessage({
+    }).matches(new RegExp("^[a-zA-Z0-9_-]*$")).withMessage({
+        "message": "login is not valid",
+        "field": "login"
+    }),
+    body('password').trim().isString().withMessage({
         "message": "password is not a string",
         "field": "password"
     }).isLength({min: 6, max: 20}).withMessage({

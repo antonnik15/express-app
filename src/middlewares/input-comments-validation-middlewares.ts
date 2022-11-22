@@ -2,7 +2,7 @@ import {body, validationResult} from "express-validator";
 import {NextFunction, Request, Response} from "express";
 
 
-export const inputCommentsValidationMiddleware = [
+export const ValidationOfCommentsInputParameters = [
     body("content").isString().withMessage({
         "message": "field content is not a string",
         "field": "content"

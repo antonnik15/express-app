@@ -7,14 +7,14 @@ const credentials = {
 }
 
 export const BasicAuthorization = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers['authorization']
-    const encodedAuth = Buffer.from(`${credentials.login}:${credentials.password}`).toString('base64')
-    const validHeader = `Basic ${encodedAuth}`
+    const authHeader = req.headers['authorization'];
+    const encodedAuth = Buffer.from(`${credentials.login}:${credentials.password}`).toString('base64');
+    const validHeader = `Basic ${encodedAuth}`;
     if (authHeader === validHeader) {
-        next()
-        return
+        next();
+        return;
     } else {
-        res.sendStatus(401)
+        res.sendStatus(401);
     }
 }
 

@@ -1,13 +1,13 @@
 import {usersCollection} from "../db";
 
 export const usersRepository = {
-    async createNewUser(user: userType): Promise<string> {
+    async createNewUser(user: userType) {
         await usersCollection.insertOne(user)
-        return user.id
+        return;
     },
     async deleteUserById(id: string): Promise<number> {
-        const resultOfDeleting = await usersCollection.deleteOne({id: id})
-        return resultOfDeleting.deletedCount;
+        const deletionResult = await usersCollection.deleteOne({id: id})
+        return deletionResult.deletedCount;
     }
 }
 

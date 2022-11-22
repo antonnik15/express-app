@@ -1,61 +1,74 @@
 import {commentsCollection, postsCollection} from "../db";
-import {ObjectId, SortDirection} from "mongodb";
+import {Collection, ObjectId, SortDirection} from "mongodb";
 
 export const postsQueryRepository = {
 
-    async findAllPosts(queryParams: queryObj) {
-        const countOfSkipElem = (+queryParams.pageNumber - 1) * (+queryParams.pageSize);
+    async findAllPosts(query: any) {
+        const queryParamsObject: QueryParamsType = this._createQueryPostsObject(query);
+
+        const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
+
         const dbPosts: DbPostType[] = await postsCollection
             .find({})
-            .sort((queryParams.sortBy !== "blogName") ? {[queryParams.sortBy]: queryParams.sortDirection}
-                : {"createdAt": queryParams.sortDirection})
+            .sort((queryParamsObject.sortBy !== "blogName")
+                ? {[queryParamsObject.sortBy]: queryParamsObject.sortDirection}
+                : {"createdAt": queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
-            .limit(+queryParams.pageSize)
+            .limit(+queryParamsObject.pageSize)
             .toArray()
-        const postsArrayOutput: OutPutPostType[] = dbPosts.map((post) => {
-            return this.mapDbPostToOutPutPostType(post)
-        })
-        return await this.createPostOutputObject({}, queryParams, postsArrayOutput)
+
+        const postsArray: OutPutPostType[] = dbPosts.map((post) => this.mapDbPostToOutPutPostType(post))
+
+        return await this.createOutputObject({}, queryParamsObject, postsArray, postsCollection)
     },
 
     async findPostById(id: string): Promise<OutPutPostType | undefined> {
-        const dbPostById: DbPostType | null =  await postsCollection.findOne({id: id})
-        if(dbPostById) {
-            return this.mapDbPostToOutPutPostType(dbPostById)
-        }
-    },
-
-    async findPostsForCertainBlog(blogId: string, queryParams: queryObj) {
-        const countOfSkipElem = (+queryParams.pageNumber - 1) * (+queryParams.pageSize);
-        const dbCertainPosts: DbPostType[] = await postsCollection
-            .find({blogId: blogId})
-            .sort(queryParams.sortBy, queryParams.sortDirection)
-            .skip(countOfSkipElem)
-            .limit(+queryParams.pageSize).toArray()
-        const postsArray: OutPutPostType[] = dbCertainPosts.map((post) => {
-            return this.mapDbPostToOutPutPostType(post)
-        })
-        return this.createPostOutputObject({blogId: blogId}, queryParams, postsArray)
-    },
-
-    async findCommentsForCertainPost(postId: string, query: queryObj) {
-        if (await this.findPostById(postId)) {
-            const countOfSkipElem = (+query.pageNumber - 1) * (+query.pageSize);
-            const dbCommentsForCertainPost: DbCommentsType[] = await commentsCollection.find({id: postId})
-                .sort({[query.sortBy]: query.sortDirection})
-                .skip(countOfSkipElem)
-                .limit(+query.pageSize).toArray()
-            return {
-                pagesCount: Math.ceil(await commentsCollection.count({id: postId}) / +query.pageSize),
-                page: +query.pageNumber,
-                pageSize: +query.pageSize,
-                totalCount: await commentsCollection.count({id: postId}),
-                items: dbCommentsForCertainPost.map((comment) => this.mapDbCommentsToOutputCommentsType(comment))
-            }
+        const postById: DbPostType | null =  await postsCollection.findOne({id: id})
+        if(postById) {
+            return this.mapDbPostToOutPutPostType(postById)
         }
         return;
     },
 
+    async findPostsForCertainBlog(blogId: string, query: any) {
+        const queryParamsObject: QueryParamsType = this._createQueryPostsObject(query)
+
+        const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
+
+        const dbPostsForCertainBlog: DbPostType[] = await postsCollection
+            .find({blogId: blogId})
+            .sort(queryParamsObject.sortBy, queryParamsObject.sortDirection)
+            .skip(countOfSkipElem)
+            .limit(+queryParamsObject.pageSize).toArray()
+
+        const postsArray: OutPutPostType[] = dbPostsForCertainBlog.map(post => this.mapDbPostToOutPutPostType(post))
+
+        return await this.createOutputObject({blogId: blogId}, queryParamsObject, postsArray, postsCollection)
+    },
+
+    async findCommentsForCertainPost(postId: string, query: any) {
+        const queryParamsObject: QueryParamsType = this._createQueryPostsObject(query);
+
+        const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
+
+        const dbCommentsForCertainPost: DbCommentsType[] = await commentsCollection
+            .find({id: postId})
+            .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
+            .skip(countOfSkipElem)
+            .limit(+queryParamsObject.pageSize).toArray()
+
+        const commentsArray: OutputCommentsType[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment))
+
+        return await this.createOutputObject({id: postId}, queryParamsObject, commentsArray, commentsCollection)
+    },
+    _createQueryPostsObject(query: any): QueryParamsType {
+        return {
+            pageNumber: (query.pageNumber) ? query.pageNumber : '1',
+            pageSize: (query.pageSize) ? query.pageSize : '10',
+            sortBy: (query.sortBy) ? query.sortBy : "createdAt",
+            sortDirection: query.sortDirection ? query.sortDirection  : 'desc'
+        }
+    },
     mapDbPostToOutPutPostType(dbPost: DbPostType) {
         return {
             id: dbPost!.id,
@@ -68,13 +81,15 @@ export const postsQueryRepository = {
         }
     },
 
-    async createPostOutputObject(filter: Object, queryParams: queryObj, array: OutPutPostType[]): Promise<OutputObjectWithPaginationType>{
+    async createOutputObject(filter: Object,
+                             queryParams: QueryParamsType,
+                             array: OutPutPostType[] | OutputCommentsType[],
+                             collection: Collection<any>): Promise<OutputObjectType>{
         return {
-            pagesCount: Math.ceil(await postsCollection.find(filter)
-                .count({}) / +queryParams.pageSize),
+            pagesCount: Math.ceil(await collection.count(filter) / +queryParams.pageSize),
             page: +queryParams.pageNumber,
             pageSize: +queryParams.pageSize,
-            totalCount: await postsCollection.find(filter).count({}),
+            totalCount: await collection.count(filter),
             items: array
         }
     },
@@ -88,6 +103,12 @@ export const postsQueryRepository = {
         }
     }
 
+}
+type QueryParamsType = {
+    pageNumber: string
+    pageSize: string
+    sortBy: string
+    sortDirection: SortDirection
 }
 
 type DbPostType = {
@@ -109,19 +130,13 @@ type OutPutPostType = {
     blogName: string
     createdAt: string
 }
-type queryObj = {
-    pageNumber: string
-    pageSize: string
-    sortBy: string
-    sortDirection: SortDirection
-}
 
-type OutputObjectWithPaginationType = {
+type OutputObjectType = {
     pagesCount: number
     page: number
     pageSize: number
     totalCount: number
-    items: Array<OutPutPostType>
+    items: Array<OutPutPostType | OutputCommentsType>
 }
 
 type DbCommentsType = {

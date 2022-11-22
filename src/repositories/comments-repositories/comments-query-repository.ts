@@ -1,9 +1,9 @@
-import {commentsCollection, CommentsType} from "../db";
+import {commentsCollection} from "../db";
 import {ObjectId} from "mongodb";
 
 
 export const commentsQueryRepository = {
-    async findCommentById(id: string): Promise<CommentsType | undefined> {
+    async findCommentById(id: string): Promise<OutputCommentsType | undefined> {
         const dbComment: DbCommentsType | null = await commentsCollection.findOne({id: id});
         if (dbComment) {
             return this.mapDbCommentsToOutputCommentsType(dbComment)

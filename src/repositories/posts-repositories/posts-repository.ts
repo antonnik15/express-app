@@ -1,24 +1,35 @@
 import {commentsCollection, CommentsType, postsCollection, PostsType} from "../db";
 
 export const postsRepository = {
-    async createPost(post: PostsType) : Promise<string> {
+    async createPost(post: PostsType) {
         await postsCollection.insertOne(post)
-        return post.id
+        return;
     },
-    async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) : Promise<number>{
-        const resultOfUpdatingPost = await postsCollection.updateOne({id: id},
-            {$set: {title: title, shortDescription: shortDescription,
-                    content: content, blogId: blogId
+    async updatePost(id: string, title: string,
+                     shortDescription: string,
+                     content: string,
+                     blogId: string): Promise<number> {
+
+        const resultOfChange = await postsCollection.updateOne({id: id},
+            {
+                $set: {
+                    title: title,
+                    shortDescription: shortDescription,
+                    content: content,
+                    blogId: blogId
                 }
             })
-        return resultOfUpdatingPost.modifiedCount;
+
+        return resultOfChange.modifiedCount;
     },
+
     async deletePostById(id: string): Promise<number> {
-        const resultOfDelete = await postsCollection.deleteOne({id: id})
-        return resultOfDelete.deletedCount;
+        const deletionResult = await postsCollection.deleteOne({id: id})
+        return deletionResult.deletedCount;
     },
-    async createCommentForPost(comment: CommentsType) {
+    async createNewCommentForPost(comment: CommentsType) {
         await commentsCollection.insertOne(comment)
+        return;
     }
 }
 
