@@ -146,6 +146,7 @@ type DbCommentsType = {
     userId: string
     userLogin: string
     createdAt: string
+    postId?: string
 }
 
 type OutputCommentsType = {
