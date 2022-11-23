@@ -12,7 +12,7 @@ export const commentsRouter = Router({})
 commentsRouter.get("/:id", async (req: Request, res: Response) => {
     const comment = await commentsQueryRepository.findCommentById(req.params.id)
     if (comment) {
-        res.send(200).send(comment)
+        res.status(200).send(comment)
         return;
     }
     res.sendStatus(404);
