@@ -47,12 +47,11 @@ commentsRouter.delete("/:commentId",
             return;
         }
         if (comment.userId === req.user!.id) {
-            const deletionResult = await commentsService.deleteCommentById(req.params.id)
+            const deletionResult = await commentsService.deleteCommentById(req.params.commentId)
             if (deletionResult) {
                 res.sendStatus(204)
                 return;
             }
-            return;
         }
         res.sendStatus(403)
 })
