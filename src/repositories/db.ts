@@ -32,6 +32,7 @@ export type CommentsType = {
     userId: string
     userLogin: string
     createdAt: string
+    postId?: string
 }
 
 const mongoUri = process.env.MONGOURI

@@ -52,14 +52,14 @@ export const postsQueryRepository = {
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
         const dbCommentsForCertainPost: DbCommentsType[] = await commentsCollection
-            .find({id: postId})
+            .find({postId: postId})
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize).toArray()
 
         const commentsArray: OutputCommentsType[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment))
 
-        return await this.createOutputObject({id: postId}, queryParamsObject, commentsArray, commentsCollection)
+        return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, commentsCollection)
     },
     _createQueryPostsObject(query: any): QueryParamsType {
         return {

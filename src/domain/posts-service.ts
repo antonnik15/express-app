@@ -31,14 +31,16 @@ export const postsService = {
                                   content: string,
                                   user: OutPutUsersType): Promise<CommentsType> {
         const newComment: CommentsType = {
-            id: postId,
+            id: (+new Date()).toString(),
             content: content,
             userId: user.id,
             userLogin: user.login,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            postId: postId
         }
 
         await postsRepository.createNewCommentForPost(newComment);
+        delete newComment.postId;
         return newComment;
     }
 }
