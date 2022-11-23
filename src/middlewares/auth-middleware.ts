@@ -13,6 +13,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     if (userId) {
         req.user = await usersQueryRepository.findUserById(userId)
         next()
+        return;
     }
     res.send(401)
 }
