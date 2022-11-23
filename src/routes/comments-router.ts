@@ -52,6 +52,7 @@ commentsRouter.delete("/:commentId",
                 res.sendStatus(204)
                 return;
             }
+            return;
         }
         res.sendStatus(403)
 })
