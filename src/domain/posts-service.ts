@@ -38,8 +38,8 @@ export const postsService = {
             createdAt: new Date().toISOString(),
             postId: postId
         }
-
-        await postsRepository.createNewCommentForPost(newComment);
+        debugger;
+        await postsRepository.createNewCommentForPost({...newComment});
         delete newComment.postId;
         return newComment;
     }
