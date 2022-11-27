@@ -39,12 +39,10 @@ export const authService = {
 
         return await usersRepository.updateConfirmation(user.id);
     },
-    async createNewConfirmationCode(user: UserAccountDBType) {
-        user.emailConfirmation.confirmationCode = uuidv4();
-        user.emailConfirmation.expirationDate = add(new Date(), {
-            hours: 1
-        })
-        return user;
+
+    async updateConfirmationCode(id: string) {
+        await usersRepository.updateConfirmationCode(id);
+        return;
     },
 
     async _generateHash(password: string) {

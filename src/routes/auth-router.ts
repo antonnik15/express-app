@@ -38,10 +38,11 @@ authRouter.post("/registration-email-resending",
     ValidationOfUsersInputParameters[2],
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
-    let user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email)
+    let user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
     if (user) {
-        user = await authService.createNewConfirmationCode(user)
-        await emailAdapter.sendEmailConfirmationMessage(user);
+        await authService.updateConfirmationCode(user.id);
+        user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
+        await emailAdapter.sendEmailConfirmationMessage(user!);
         res.sendStatus(204)
         return;
     }

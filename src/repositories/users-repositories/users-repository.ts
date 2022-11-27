@@ -1,4 +1,6 @@
 import {usersCollection} from "../db";
+import {v4 as uuidv4} from "uuid";
+import add from "date-fns/add";
 
 
 export const usersRepository = {
@@ -12,6 +14,13 @@ export const usersRepository = {
     },
     async updateConfirmation(id: string) {
         const resultOfChange = await usersCollection.updateOne({id: id}, {$set: {isConfirmed: true}})
+        return resultOfChange.modifiedCount;
+    },
+    async updateConfirmationCode(id: string) {
+        const resultOfChange = await usersCollection.updateOne({id: id}, {$set: {"emailConfirmation.confirmationCode": uuidv4(),
+                "emailConfirmation.expirationDate": add(new Date(), {
+                    hours: 1
+                }) }})
         return resultOfChange.modifiedCount;
     }
 }
