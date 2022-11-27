@@ -6,13 +6,15 @@ export const emailAdapter = {
     async sendEmailConfirmationMessage(user: UserAccountDBType) {
 
         const transport = nodemailer.createTransport({
-            host: "gmail",
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
             auth: {
                 user: "foritincubator@gmail.com",
-                pass: "rwrqtxetwhkwhmpz"
+                pass: "jjcsencsxikhstoj"
             }
         })
-        let mailOptions = {
+        const mailOptions = {
             from: "Anton's Service <foritincubator@gmail.com>",
             to: user.accountData.email,
             subject: "confirmation registration",

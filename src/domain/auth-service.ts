@@ -12,7 +12,7 @@ export const authService = {
             id: (+new Date()).toString(),
             accountData: {
                 login: login,
-                email,
+                email: email,
                 password: passwordHash,
                 createdAt: new Date().toISOString()
             },
@@ -28,13 +28,8 @@ export const authService = {
         };
 
         await usersRepository.createNewUser(newUser)
-        try {
-            await emailAdapter.sendEmailConfirmationMessage(newUser);
-            return newUser.id;
-        } catch (err) {
-            await usersRepository.deleteUserById(newUser.id);
-            return null;
-        }
+        await emailAdapter.sendEmailConfirmationMessage(newUser);
+        return newUser.id;
     },
     async confirmEmail(code: string) {
         const user = await usersQueryRepository.findUserByConfirmationCode(code);
