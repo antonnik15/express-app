@@ -31,7 +31,10 @@ authRouter.post("/registration-confirmation", async (req: Request, res: Response
     res.sendStatus(400)
 })
 
-authRouter.post("/registration-email-resending", async (req: Request, res: Response) => {
+authRouter.post("/registration-email-resending",
+    ValidationOfUsersInputParameters[2],
+    inputUsersValidationResult,
+    async (req: Request, res: Response) => {
     const user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email)
     if (user) {
         await emailAdapter.sendEmailConfirmationMessage(user);
@@ -42,7 +45,6 @@ authRouter.post("/registration-email-resending", async (req: Request, res: Respo
 })
 
 authRouter.post("/login",
-    inputUsersValidationResult,
     async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (user) {
