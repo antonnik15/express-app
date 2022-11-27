@@ -31,11 +31,11 @@ export const ValidationOfUsersInputParameters = [
 
 export const userVerification = async (req: Request, res: Response, next: NextFunction) => {
     if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
-        res.status(400).json({ errorsMessages: [{ message: "this user is exist", field: "email" }]});
+        res.status(400).send({ errorsMessages: [{ message: "this user is exist", field: "email" }]});
         return;
     }
     if (await usersQueryRepository.findUserByLoginOrEmail(req.body.login)) {
-        res.status(400).json({ errorsMessages: [{ message: "this user is exist", field: "login" }]});
+        res.status(400).send({ errorsMessages: [{ message: "this user is exist", field: "login" }]});
         return;
     }
     next();
