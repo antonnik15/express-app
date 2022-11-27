@@ -15,11 +15,20 @@ authRouter.post("/registration",
     ValidationOfUsersInputParameters,
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
+        if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
+            res.sendStatus(400);
+            return;
+        }
+        if (await usersQueryRepository.findUserByLoginOrEmail(req.body.login)) {
+            res.sendStatus(400);
+            return;
+        }
         const userId = await authService.createNewUser(req.body.login, req.body.password, req.body.email);
         if (userId) {
             res.sendStatus(204);
             return;
         }
+        res.sendStatus(400)
     })
 
 authRouter.post("/registration-confirmation", async (req: Request, res: Response) => {
