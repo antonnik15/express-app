@@ -18,13 +18,21 @@ export type PostsType = {
     createdAt: string
 }
 
-export type UsersType = {
+
+export type UserAccountDBType = {
     id: string
-    login: string
-    password: string
-    email: string
-    createdAt: string
-}
+    accountData: {
+        login: string
+        email: string
+        password: string
+        createdAt: string
+    },
+    emailConfirmation: {
+        confirmationCode: string
+        expirationDate: Date
+    },
+    isConfirmed: boolean
+};
 
 export type CommentsType = {
     id: string
@@ -41,7 +49,7 @@ const client = new MongoClient(mongoUri!)
 export const db = client.db("hometask3")
 export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
-export const usersCollection = db.collection<UsersType>("users");
+export const usersCollection = db.collection<UserAccountDBType>("users");
 export const commentsCollection = db.collection<CommentsType>("comments")
 
 export async function runDb() {

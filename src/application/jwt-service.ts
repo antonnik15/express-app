@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {DbUsersType} from "../repositories/users-repositories/users-query-repository";
+import {UserAccountDBType} from "../repositories/db";
 
 export const jwtService = {
-    async createJWT(user: DbUsersType) {
+    async createJWT(user: UserAccountDBType) {
         return jwt.sign({userId: user.id}, process.env.JWT_SECRET!, {expiresIn: "1h"})
     },
     async getUserIdByToken(token: string) {

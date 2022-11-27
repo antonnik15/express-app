@@ -1,6 +1,8 @@
 import {usersRepository} from "../repositories/users-repositories/users-repository";
 import bcrypt from "bcrypt";
 import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {v4 as uuidv4} from "uuid";
+import add from "date-fns/add";
 export const usersService = {
     async createNewUser(login: string,
                         password: string,
@@ -11,11 +13,22 @@ export const usersService = {
 
         const newUser = {
             id: (+new Date()).toString(),
-            login: login,
-            password: passwordHash,
-            email: email,
-            createdAt: (new Date()).toISOString()
-        }
+            accountData: {
+                login: login,
+                email,
+                password: passwordHash,
+                createdAt: new Date().toISOString()
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), {
+                    hours: 0,
+                    minutes: 5,
+                    seconds: 5
+                })
+            },
+            isConfirmed: false
+        };
 
         await usersRepository.createNewUser(newUser)
         return newUser.id;
@@ -26,7 +39,8 @@ export const usersService = {
     async checkCredentials(loginOrEmail: string, password: string) {
         const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail);
         if (!user) return;
-        if (await bcrypt.compare(password, user.password)) {
+        if (!user.isConfirmed) return null;
+        if (await bcrypt.compare(password, user.accountData.password)) {
             return user;
         }
         return;

@@ -1,5 +1,6 @@
-import {ObjectId, SortDirection} from "mongodb";
+import {SortDirection} from "mongodb";
 import {usersCollection} from "../db";
+
 
 
 export const usersQueryRepository = {
@@ -9,14 +10,14 @@ export const usersQueryRepository = {
         let filter = {}
         if (queryParamsObject.searchLoginTerm || queryParamsObject.searchEmailTerm) {
             filter = {
-                $or: [{login: {$regex: queryParamsObject.searchLoginTerm, $options: 'i'}},
-                    {email: {$regex: queryParamsObject.searchEmailTerm, $options: 'i'}}]
+                $or: [{"accountData.login": {$regex: queryParamsObject.searchLoginTerm, $options: 'i'}},
+                    {"accountData.email": {$regex: queryParamsObject.searchEmailTerm, $options: 'i'}}]
             }
         }
 
         const countOfSkipElem: number = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
-        const dbUsers: DbUsersType[] = await usersCollection.find(filter)
+        const dbUsers: UserAccountDBType[] = await usersCollection.find(filter)
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize)
@@ -39,9 +40,18 @@ export const usersQueryRepository = {
     },
 
     async findUserByLoginOrEmail(loginOrEmail: string) {
-        return await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
+        const user = await usersCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]});
+        if(!user) return null;
+        return {
+            id: user.id,
+            accountData: user.accountData,
+            emailConfirmation: user.emailConfirmation,
+            isConfirmed: user.isConfirmed
+        }
     },
-
+    async findUserByConfirmationCode(code: string) {
+        return await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+    },
     _createQueryParamsObject(query: any): QueryParamsType {
         return {
             pageNumber: (query.pageNumber) ? query.pageNumber : '1',
@@ -53,12 +63,12 @@ export const usersQueryRepository = {
         }
     },
 
-    mapDbUsersTypeToOutputUsersType(dbUser: DbUsersType): OutPutUsersType {
+    mapDbUsersTypeToOutputUsersType(dbUser: UserAccountDBType): OutPutUsersType {
             return {
                 id: dbUser.id,
-                login: dbUser.login,
-                email: dbUser.email,
-                createdAt: dbUser.createdAt
+                login: dbUser.accountData.login,
+                email: dbUser.accountData.email,
+                createdAt: dbUser.accountData.createdAt
             }
         },
 
@@ -76,14 +86,21 @@ export const usersQueryRepository = {
     },
 }
 
-export type DbUsersType = {
-    _id: ObjectId
+export type UserAccountDBType = {
     id: string
-    login: string
-    password: string
-    email: string
-    createdAt: string
-}
+    accountData: {
+        login: string
+        email: string
+        password: string
+        createdAt: string
+    },
+    emailConfirmation: {
+        confirmationCode: string
+        expirationDate: Date
+    },
+    isConfirmed: boolean
+};
+
 
 
 export type OutPutUsersType = {
