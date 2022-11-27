@@ -1,7 +1,7 @@
 import {Response, Request, Router} from "express";
 import {usersService} from "../domain/users-service";
 import {
-    inputUsersValidationResult, ValidationOfUsersInputParameters
+    inputUsersValidationResult, userVerification, ValidationOfUsersInputParameters
 } from "../middlewares/input-users-validation-middlewares";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
@@ -9,20 +9,14 @@ import {authService} from "../domain/auth-service";
 import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
 import {emailAdapter} from "../adapter/email-adapter";
 
+
 export const authRouter = Router({})
 
 authRouter.post("/registration",
     ValidationOfUsersInputParameters,
     inputUsersValidationResult,
+    userVerification,
     async (req: Request, res: Response) => {
-        if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
-            res.sendStatus(400);
-            return;
-        }
-        if (await usersQueryRepository.findUserByLoginOrEmail(req.body.login)) {
-            res.sendStatus(400);
-            return;
-        }
         const userId = await authService.createNewUser(req.body.login, req.body.password, req.body.email);
         if (userId) {
             res.sendStatus(204);
@@ -44,8 +38,9 @@ authRouter.post("/registration-email-resending",
     ValidationOfUsersInputParameters[2],
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
-    const user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email)
+    let user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email)
     if (user) {
+        user = await authService.createNewConfirmationCode(user)
         await emailAdapter.sendEmailConfirmationMessage(user);
         res.sendStatus(204)
         return;

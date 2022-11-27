@@ -39,6 +39,13 @@ export const authService = {
 
         return await usersRepository.updateConfirmation(user.id);
     },
+    async createNewConfirmationCode(user: UserAccountDBType) {
+        user.emailConfirmation.confirmationCode = uuidv4();
+        user.emailConfirmation.expirationDate = add(new Date(), {
+            hours: 1
+        })
+        return user;
+    },
 
     async _generateHash(password: string) {
         const salt = await bcrypt.genSalt(10);
