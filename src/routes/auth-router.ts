@@ -31,7 +31,7 @@ authRouter.post("/registration-confirmation", async (req: Request, res: Response
         res.sendStatus(204)
         return;
     }
-    res.sendStatus(400)
+    res.status(400).send({ errorsMessages: [{ message: "some problem with code confirmation", field: "code" }]})
 })
 
 authRouter.post("/registration-email-resending",
@@ -39,6 +39,10 @@ authRouter.post("/registration-email-resending",
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
     let user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
+    if (user?.isConfirmed) {
+        res.status(400).send({ errorsMessages: [{ message: "this email was confirmed", field: "email" }]})
+        return;
+    }
     if (user) {
         await authService.updateConfirmationCode(user.id);
         user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
