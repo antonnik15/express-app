@@ -39,7 +39,14 @@ export const authService = {
 
         return await usersRepository.updateConfirmation(user.id);
     },
-
+    async resendEmailConfirmationMessage(email: string) {
+        const user = await usersQueryRepository.findUserByLoginOrEmail(email)
+        if (!user || user.isConfirmed) return null;
+        await this.updateConfirmationCode(user.id);
+        const userWithNewConfirmationCode = await usersQueryRepository.findUserByLoginOrEmail(email);
+        await emailAdapter.sendEmailConfirmationMessage(userWithNewConfirmationCode!)
+        return userWithNewConfirmationCode!.id;
+    },
     async updateConfirmationCode(id: string) {
         await usersRepository.updateConfirmationCode(id);
         return;

@@ -6,9 +6,6 @@ import {
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
-import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
-import {emailAdapter} from "../adapter/email-adapter";
-
 
 export const authRouter = Router({})
 
@@ -38,19 +35,12 @@ authRouter.post("/registration-email-resending",
     ValidationOfUsersInputParameters[2],
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
-    let user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
-    if (user?.isConfirmed) {
-        res.status(400).send({ errorsMessages: [{ message: "this email was confirmed", field: "email" }]})
-        return;
-    }
-    if (user) {
-        await authService.updateConfirmationCode(user.id);
-        user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email);
-        await emailAdapter.sendEmailConfirmationMessage(user!);
+    const resultOfSending = await authService.resendEmailConfirmationMessage(req.body.email);
+    if (resultOfSending) {
         res.sendStatus(204)
         return;
     }
-    res.sendStatus(400);
+    res.status(400).send({ errorsMessages: [{ message: "this user was confirmed, or some problem with email", field: "email" }]});
 })
 
 authRouter.post("/login",

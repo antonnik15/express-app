@@ -17,11 +17,15 @@ export const usersRepository = {
         return resultOfChange.modifiedCount;
     },
     async updateConfirmationCode(id: string) {
-        const resultOfChange = await usersCollection.updateOne({id: id}, {$set: {"emailConfirmation.confirmationCode": uuidv4(),
+        await usersCollection.updateOne({id: id}, {
+            $set: {
+                "emailConfirmation.confirmationCode": uuidv4(),
                 "emailConfirmation.expirationDate": add(new Date(), {
                     hours: 1
-                }) }})
-        return resultOfChange.modifiedCount;
+                })
+            }
+        })
+        return;
     }
 }
 
