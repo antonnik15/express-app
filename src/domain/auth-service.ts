@@ -53,7 +53,7 @@ export const authService = {
         return;
     },
     async checkRefreshToken(refreshToken: string) {
-        const userId: string = await jwtService.verifyRefreshToken(refreshToken);
+        const userId = await jwtService.verifyRefreshToken(refreshToken);
         if (!userId) return null;
         const userRefreshTokenByUserId = await usersQueryRepository.findRefreshTokenForUserById(userId);
         if (userRefreshTokenByUserId !== refreshToken) return null;
