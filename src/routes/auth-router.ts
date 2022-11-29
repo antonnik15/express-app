@@ -89,7 +89,7 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
     res.sendStatus(401);
 })
 
-authRouter.post("/me",
+authRouter.get("/me",
     authMiddleware,
     async (req: Request, res: Response) => {
     res.status(200).send({
