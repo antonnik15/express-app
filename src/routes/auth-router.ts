@@ -7,6 +7,7 @@ import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 
+
 export const authRouter = Router({})
 
 authRouter.post("/registration",
@@ -47,11 +48,45 @@ authRouter.post("/login",
     async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (user) {
-        const token = await jwtService.createJWT(user)
-        res.status(200).send({accessToken: token})
+        const accessToken = jwtService.createAccessToken(user.id);
+        const refreshToken = jwtService.createRefreshToken(user.id);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            path: '/auth/refresh-token'
+        });
+        res.status(200).send({accessToken: accessToken});
         return;
     }
     res.sendStatus(401)
+})
+
+authRouter.post("/refresh-token", async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) res.sendStatus(401);
+    const userId = await authService.checkRefreshToken(refreshToken);
+    if (userId) {
+        const accessToken = jwtService.createAccessToken(userId);
+        const refreshToken = jwtService.createRefreshToken(userId);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            path: '/auth/refresh-token'
+        });
+        res.status(200).send({accessToken: accessToken});
+        return;
+    }
+    res.sendStatus(401)
+})
+
+authRouter.post("/logout", async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    const userId = await authService.checkRefreshToken(refreshToken);
+    if (userId) {
+        await authService.deleteRefreshToken(userId);
+        res.sendStatus(204);
+        res.clearCookie('refreshToken', { path: '/auth/refresh-token' });
+        return;
+    }
+    res.sendStatus(401);
 })
 
 authRouter.get("/me",

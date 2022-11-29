@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from "express"
 import bodyParser from "body-parser"
+import cookieParser from 'cookie-parser'
 import {runDb} from "./repositories/db";
 import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
@@ -13,12 +14,13 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(bodyParser());
-app.use("/blogs", blogsRouter)
-app.use("/posts", postsRouter)
-app.use("/testing/all-data", deleteRouter)
-app.use('/users', usersRouter)
-app.use('/auth', authRouter)
-app.use('/comments', commentsRouter)
+app.use(cookieParser());
+app.use("/blogs", blogsRouter);
+app.use("/posts", postsRouter);
+app.use("/testing/all-data", deleteRouter);
+app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+app.use('/comments', commentsRouter);
 
 const startApp = async () => {
     await runDb();

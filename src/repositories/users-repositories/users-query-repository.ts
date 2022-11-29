@@ -38,7 +38,10 @@ export const usersQueryRepository = {
         }
         return;
     },
-
+    async findRefreshTokenForUserById(id: string) {
+        const user = await usersCollection.findOne({id: id})
+        return user?.refreshToken;
+    },
     async findUserByLoginOrEmail(loginOrEmail: string) {
         const user = await usersCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]});
         if(!user) return null;
@@ -99,6 +102,7 @@ export type UserAccountDBType = {
         expirationDate: Date
     },
     isConfirmed: boolean
+    refreshToken?: string
 };
 
 

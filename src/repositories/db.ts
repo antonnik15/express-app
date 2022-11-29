@@ -32,6 +32,7 @@ export type UserAccountDBType = {
         expirationDate: Date
     },
     isConfirmed: boolean
+    refreshToken?: string
 };
 
 export type CommentsType = {

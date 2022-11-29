@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/uuid": "^8.3.4",
     "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "date-fns": "^2.29.3",

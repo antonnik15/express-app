@@ -26,6 +26,15 @@ export const usersRepository = {
             }
         })
         return;
+    },
+
+    async addRefreshToken(id: string, refreshToken: string) {
+        await usersCollection.updateOne({id: id}, {$set: {refreshToken: refreshToken}});
+        return;
+    },
+    async deleteRefreshToken(id: string) {
+        await usersCollection.updateOne({id: id}, {$unset: {refreshToken: 1}})
+        return;
     }
 }
 
@@ -43,4 +52,5 @@ export type UserAccountDBType = {
         expirationDate: Date
     },
     isConfirmed: boolean
+    refreshToken?: string
 };

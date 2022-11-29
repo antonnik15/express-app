@@ -4,6 +4,7 @@ import add from "date-fns/add"
 import {UserAccountDBType, usersRepository} from "../repositories/users-repositories/users-repository";
 import {emailAdapter} from "../adapter/email-adapter";
 import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {jwtService} from "../application/jwt-service";
 
 export const authService = {
     async createNewUser(login: string, password: string, email: string) {
@@ -51,7 +52,17 @@ export const authService = {
         await usersRepository.updateConfirmationCode(id);
         return;
     },
-
+    async checkRefreshToken(refreshToken: string) {
+        const userId: string = await jwtService.verifyRefreshToken(refreshToken);
+        if (!userId) return null;
+        const userRefreshTokenByUserId = await usersQueryRepository.findRefreshTokenForUserById(userId);
+        if (userRefreshTokenByUserId !== refreshToken) return null;
+        return userId;
+    },
+    async deleteRefreshToken(id: string) {
+        await usersRepository.deleteRefreshToken(id);
+        return;
+    },
     async _generateHash(password: string) {
         const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
