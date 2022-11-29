@@ -82,8 +82,8 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
     const userId = await authService.checkRefreshToken(refreshToken);
     if (userId) {
         await authService.deleteRefreshToken(userId);
+        res.clearCookie('refreshToken');
         res.sendStatus(204);
-        res.clearCookie('refreshToken', { path: '/auth/refresh-token' });
         return;
     }
     res.sendStatus(401);
