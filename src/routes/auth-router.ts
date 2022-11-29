@@ -52,7 +52,8 @@ authRouter.post("/login",
         const refreshToken = jwtService.createRefreshToken(user.id);
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh-token'
+            path: '/auth/refresh-token',
+            secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
@@ -69,7 +70,8 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
         const refreshToken = jwtService.createRefreshToken(userId);
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh-token'
+            path: '/auth/refresh-token',
+            secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
