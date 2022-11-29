@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {usersService} from "../domain/users-service";
 
 export const jwtService = {
-    createAccessToken(id: string) {
+    async createAccessToken(id: string) {
         return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "10s"})
     },
     async createRefreshToken(id: string) {
