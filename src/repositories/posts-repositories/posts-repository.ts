@@ -28,7 +28,7 @@ export const postsRepository = {
         return deletionResult.deletedCount;
     },
     async createNewCommentForPost(comment: CommentsType) {
-        await commentsCollection.insertOne(comment);
+        await commentsCollection.insertOne({...comment});
         return;
     }
 }

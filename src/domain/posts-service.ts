@@ -22,6 +22,7 @@ export const postsService = {
                          content: string, blogId: string) : Promise<number>{
 
         return await postsRepository.updatePost(id, title, shortDescription, content, blogId)
+
     },
     async deletePostById(id: string) : Promise<number>{
         return postsRepository.deletePostById(id)
@@ -38,9 +39,8 @@ export const postsService = {
             createdAt: new Date().toISOString(),
             postId: postId
         }
-        debugger;
         await postsRepository.createNewCommentForPost({...newComment});
-        delete newComment.postId;
+        debugger;
         return newComment;
     }
 }
