@@ -40,7 +40,7 @@ export const postsService = {
             postId: postId
         }
         await postsRepository.createNewCommentForPost({...newComment});
-        debugger;
+        delete newComment.postId;
         return newComment;
     }
 }
