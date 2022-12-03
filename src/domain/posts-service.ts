@@ -41,6 +41,6 @@ export const postsService = {
         }
         await postsRepository.createNewCommentForPost({...newComment});
         delete newComment.postId;
-        return newComment;
+        return newComment
     }
 }
