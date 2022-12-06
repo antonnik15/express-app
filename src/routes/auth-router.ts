@@ -7,7 +7,6 @@ import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 
-
 export const authRouter = Router({})
 
 authRouter.post("/registration",
@@ -47,9 +46,13 @@ authRouter.post("/registration-email-resending",
 authRouter.post("/login",
     async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+
     if (user) {
-        const accessToken = await jwtService.createAccessToken(user.id);
-        const refreshToken = await jwtService.createRefreshToken(user.id);
+        const accessToken: string = await jwtService.createAccessToken(user.id);
+        const refreshToken: string = await jwtService.createRefreshToken(user.id);
+
+        await authService.createDeviceAuthSession(refreshToken, req)
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true
@@ -66,10 +69,13 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    const userId = await authService.checkRefreshToken(refreshToken);
-    if (userId) {
-        const accessToken = await jwtService.createAccessToken(userId);
-        const refreshToken = await jwtService.createRefreshToken(userId);
+    const jwtPayload = await authService.checkRefreshToken(refreshToken,req);
+    if (jwtPayload) {
+        const accessToken: string = await jwtService.createAccessToken(jwtPayload.userId);
+        const refreshToken: string = await jwtService.createRefreshToken(jwtPayload.userId, jwtPayload.deviceId);
+
+        await authService.updateCurrentAuthSession(refreshToken);
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true
@@ -82,9 +88,9 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
-    const userId = await authService.checkRefreshToken(refreshToken);
-    if (userId) {
-        await authService.deleteRefreshToken(userId);
+    const jwtPayload = await authService.checkRefreshToken(refreshToken, req);
+    if (jwtPayload) {
+        await authService.deleteCurrentAuthSession(jwtPayload);
         res.clearCookie('refreshToken');
         res.sendStatus(204);
         return;

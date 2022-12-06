@@ -18,7 +18,6 @@ export type PostsType = {
     createdAt: string
 }
 
-
 export type UserAccountDBType = {
     id: string
     accountData: {
@@ -44,6 +43,20 @@ export type CommentsType = {
     postId?: string
 }
 
+export type AuthSessionsType = {
+    userId: string
+    sessionId: string
+    issuedAt: string
+    exp: string
+    deviceId: string
+    ipAddress: string
+    deviceName: {
+        name: string
+        version: string
+    }
+}
+
+
 const mongoUri = process.env.MONGOURI
 
 const client = new MongoClient(mongoUri!)
@@ -52,6 +65,7 @@ export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
 export const usersCollection = db.collection<UserAccountDBType>("users");
 export const commentsCollection = db.collection<CommentsType>("comments")
+export const authSessionsCollection = db.collection<AuthSessionsType>("auth_sessions")
 
 export async function runDb() {
     try {

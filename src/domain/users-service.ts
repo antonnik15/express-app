@@ -44,10 +44,6 @@ export const usersService = {
         }
         return;
     },
-    async addRefreshToken(id: string, refreshToken: string) {
-        await usersRepository.addRefreshToken(id, refreshToken)
-        return;
-    },
     async _generateHash(password: string, salt: string){
         return await bcrypt.hash(password, salt)
     }

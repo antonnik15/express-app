@@ -8,7 +8,6 @@ import {
 } from "../middlewares/input-users-validation-middlewares";
 
 
-
 export const usersRouter = Router({})
 
 usersRouter.get("/",

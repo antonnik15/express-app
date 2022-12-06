@@ -111,7 +111,7 @@ type QueryParamsType = {
     sortDirection: SortDirection
 }
 
-type DbPostType = {
+type  DbPostType = {
     _id: ObjectId
     id: string
     title: string

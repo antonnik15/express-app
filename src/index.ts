@@ -9,10 +9,12 @@ import {deleteRouter} from "./routes/delete-all-data";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
+import {securityDevicesRouter} from "./routes/security-devices-router";
 
 const app = express();
 const port = process.env.PORT || 3001;
 
+app.set('trust proxy', true)
 app.use(bodyParser());
 app.use(cookieParser());
 app.use("/blogs", blogsRouter);
@@ -21,6 +23,7 @@ app.use("/testing/all-data", deleteRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/comments', commentsRouter);
+app.use("/security/devices", securityDevicesRouter);
 
 const startApp = async () => {
     await runDb();
