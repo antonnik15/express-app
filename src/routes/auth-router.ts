@@ -59,8 +59,8 @@ authRouter.post("/login",
         await authService.createDeviceAuthSession(refreshToken, deviceInfo, ipAddress);
 
         res.cookie('refreshToken', refreshToken, {
-            // httpOnly: true,
-            // secure: true
+            httpOnly: true,
+            secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
@@ -82,8 +82,8 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
         await authService.updateCurrentAuthSession(refreshToken);
 
         res.cookie('refreshToken', refreshToken, {
-            // httpOnly: true,
-            // secure: true
+            httpOnly: true,
+            secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
