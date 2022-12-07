@@ -16,9 +16,9 @@ export const jwtService = {
             return null;
         }
     },
-    getJWTPayload(refreshToken: string) {
+    getJWTPayload(token: string) {
         try {
-            const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+            const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET!)
             return JSON.parse(JSON.stringify(payload))
         } catch (err) {
             return null;

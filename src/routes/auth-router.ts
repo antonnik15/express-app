@@ -6,6 +6,7 @@ import {
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
+import UAParser from "ua-parser-js";
 
 export const authRouter = Router({})
 
@@ -51,7 +52,10 @@ authRouter.post("/login",
         const accessToken: string = await jwtService.createAccessToken(user.id);
         const refreshToken: string = await jwtService.createRefreshToken(user.id);
 
-        await authService.createDeviceAuthSession(refreshToken, req)
+        const deviceInfo = UAParser(req.headers["user-agent"]);
+        const ipAddress: string = req.ip;
+
+        await authService.createDeviceAuthSession(refreshToken, deviceInfo, ipAddress);
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

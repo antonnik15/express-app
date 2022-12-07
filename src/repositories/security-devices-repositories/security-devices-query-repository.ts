@@ -1,10 +1,9 @@
-import {SessionsType} from "../../domain/auth-service";
 import {authSessionsCollection} from "../db";
 import {ObjectId} from "mongodb";
 
 export const securityDevicesQueryRepository = {
     async findSessionByJWTPayload(jwtPayload: any) {
-        const authSession: SessionsType | null = await authSessionsCollection.findOne({
+        const authSession: dbSessionsType | null = await authSessionsCollection.findOne({
             userId: jwtPayload.userId,
             issuedAt: jwtPayload.iat,
             exp: jwtPayload.exp,
@@ -28,7 +27,7 @@ export const securityDevicesQueryRepository = {
     }
 }
 
-type dbSessionsType = {
+export type dbSessionsType = {
     _id: ObjectId
     userId: string
     sessionId: string

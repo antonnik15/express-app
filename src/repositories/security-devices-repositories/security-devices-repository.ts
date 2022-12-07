@@ -1,8 +1,7 @@
-import {authSessionsCollection} from "../db";
-import {SessionsType} from "../../domain/auth-service";
+import {authSessionsCollection, AuthSessionsType} from "../db";
 
 export const securityDevicesRepository = {
-    async createNewAuthSession(newAuthSession: SessionsType): Promise<undefined> {
+    async createNewAuthSession(newAuthSession: AuthSessionsType): Promise<undefined> {
         await authSessionsCollection.insertOne(newAuthSession);
         return;
     },

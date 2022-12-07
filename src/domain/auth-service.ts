@@ -5,6 +5,13 @@ import {UserAccountDBType, usersRepository} from "../repositories/users-reposito
 import {emailAdapter} from "../adapter/email-adapter";
 import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
 import {jwtService} from "../application/jwt-service";
+import {AuthSessionsType} from "../repositories/db";
+import UAParser from "ua-parser-js";
+import {securityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
+import {
+    dbSessionsType,
+    securityDevicesQueryRepository
+} from "../repositories/security-devices-repositories/security-devices-query-repository";
 
 export const authService = {
     async createNewUser(login: string, password: string, email: string) {
@@ -52,20 +59,50 @@ export const authService = {
         await usersRepository.updateConfirmationCode(id);
         return;
     },
-    async checkRefreshToken(refreshToken: string) {
-        const userId = await jwtService.verifyRefreshToken(refreshToken);
-        if (!userId) return null;
-        const userRefreshTokenByUserId = await usersQueryRepository.findRefreshTokenForUserById(userId);
-        if (userRefreshTokenByUserId !== refreshToken) return null;
-        return userId;
-    },
-    async deleteRefreshToken(id: string) {
-        await usersRepository.deleteRefreshToken(id);
-        return;
+    async checkRefreshToken(refreshToken: string, req: any) {
+        const jwtPayload = jwtService.getJWTPayload(refreshToken);
+        if (!jwtPayload) return null;
+        const currentAuthSession: dbSessionsType | null = await securityDevicesQueryRepository.findSessionByJWTPayload(jwtPayload);
+        if (!currentAuthSession) return null;
+        const deviceInfo = UAParser(req.headers["user-agent"]);
+        const ipAddress: string = req.ip;
+        if (currentAuthSession.ipAddress !== ipAddress
+        || currentAuthSession.deviceName.name !== deviceInfo.browser.name
+        || currentAuthSession.deviceName.version !== deviceInfo.browser.version ) return null;
+        return jwtPayload;
     },
     async _generateHash(password: string) {
         const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
+    },
+    async createDeviceAuthSession(refreshToken: string, deviceInfo: any, ipAddress: string) {
+        const jwtPayload = jwtService.getJWTPayload(refreshToken)
+        const newSession: AuthSessionsType = {
+            userId: jwtPayload.userId,
+            sessionId: (+new Date() * 2).toString(),
+            issuedAt: jwtPayload.issuedAt,
+            exp: jwtPayload.exp,
+            deviceId: jwtPayload.deviceId,
+            ipAddress: ipAddress,
+            deviceName: {
+                name: deviceInfo.browser.name,
+                version: deviceInfo.browser.version
+            }
+        }
+        await securityDevicesRepository.createNewAuthSession(newSession);
+        return;
+    },
+    async updateCurrentAuthSession(refreshToken: string) {
+        const jwtPayload = jwtService.getJWTPayload(refreshToken);
+        if (jwtPayload) {
+            await securityDevicesRepository.updateCurrentAuthSession(jwtPayload)
+        }
+        return;
+    },
+    async deleteCurrentAuthSession(jwtPayload: any) {
+        await securityDevicesRepository.deleteCurrentAuthSession(jwtPayload);
+        return;
     }
 }
+
 
