@@ -67,8 +67,8 @@ export const authService = {
         const deviceInfo = UAParser(req.headers["user-agent"]);
         const ipAddress: string = req.ip;
         if (currentAuthSession.ipAddress !== ipAddress
-        || currentAuthSession.deviceName.name !== deviceInfo.browser.name
-        || currentAuthSession.deviceName.version !== deviceInfo.browser.version ) return null;
+        || currentAuthSession.deviceName.name != deviceInfo.browser.name
+        || currentAuthSession.deviceName.version != deviceInfo.browser.version ) return null;
         return jwtPayload;
     },
     async _generateHash(password: string) {
@@ -80,7 +80,7 @@ export const authService = {
         const newSession: AuthSessionsType = {
             userId: jwtPayload.userId,
             sessionId: (+new Date() * 2).toString(),
-            issuedAt: jwtPayload.issuedAt,
+            issuedAt: jwtPayload.iat,
             exp: jwtPayload.exp,
             deviceId: jwtPayload.deviceId,
             ipAddress: ipAddress,

@@ -7,6 +7,7 @@ import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 import UAParser from "ua-parser-js";
+import {authSessionsCollection} from "../repositories/db";
 
 export const authRouter = Router({})
 
@@ -58,8 +59,8 @@ authRouter.post("/login",
         await authService.createDeviceAuthSession(refreshToken, deviceInfo, ipAddress);
 
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true
+            // httpOnly: true,
+            // secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
@@ -81,8 +82,8 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
         await authService.updateCurrentAuthSession(refreshToken);
 
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true
+            // httpOnly: true,
+            // secure: true
         });
         res.status(200).send({accessToken: accessToken});
         return;
@@ -110,4 +111,7 @@ authRouter.get("/me",
         login: req.user!.login,
         userId: req.user!.id
     })
+})
+authRouter.get("/all", async (req: Request, res: Response) => {
+    res.send(await authSessionsCollection.find().toArray())
 })
