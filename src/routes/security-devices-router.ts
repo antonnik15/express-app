@@ -38,7 +38,7 @@ securityDevicesRouter.delete("/:deviceId", async (req: Request, res: Response) =
         res.sendStatus(401);
         return;
     }
-    const session = await securityDevicesQueryRepository.findSessionByDeviceId(jwtPayload.deviceId);
+    const session = await securityDevicesQueryRepository.findSessionByDeviceId(req.params.deviceId);
     if (!session) {
         res.sendStatus(404);
         return;
