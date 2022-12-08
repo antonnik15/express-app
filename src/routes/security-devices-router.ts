@@ -26,7 +26,7 @@ securityDevicesRouter.delete("/", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    await securityDevicesRepository.terminateAllAuthSessionsForCurrentUser(jwtPayload.userId);
+    await securityDevicesRepository.terminateAllAuthSessionsForCurrentUser(jwtPayload);
     res.sendStatus(204);
     return;
 })

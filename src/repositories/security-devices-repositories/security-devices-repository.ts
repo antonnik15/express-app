@@ -16,8 +16,8 @@ export const securityDevicesRepository = {
         await authSessionsCollection.deleteOne({userId: payload.userId, deviceId: payload.deviceId})
         return;
     },
-    async terminateAllAuthSessionsForCurrentUser(userId: string) {
-        await authSessionsCollection.deleteMany({userId: userId});
+    async terminateAllAuthSessionsForCurrentUser(jwtPayload: any) {
+        await authSessionsCollection.deleteMany({userId: jwtPayload.userId, deviceId: {$ne: jwtPayload.deviceId}});
         return;
     },
     async terminateCurrentSessionByDeviceId(userId: string, deviceId: string) {
