@@ -93,7 +93,7 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
-    const jwtPayload = await authService.checkRefreshToken(refreshToken, req);
+    const jwtPayload = await authService.checkRefreshToken(refreshToken);
     if (jwtPayload) {
         await authService.deleteCurrentAuthSession(jwtPayload);
         res.clearCookie('refreshToken');
