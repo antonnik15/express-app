@@ -3,10 +3,10 @@ import {v4 as uuidv4} from "uuid";
 
 export const jwtService = {
     async createAccessToken(id: string) {
-        return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "1h"})
+        return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "10s"})
     },
     async createRefreshToken(userId: string, deviceId: string = uuidv4()): Promise<string> {
-        return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_REFRESH_SECRET!, {expiresIn: '1h'});
+        return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_REFRESH_SECRET!, {expiresIn: '20s'});
     },
     getUserIdByToken(token: string) {
         try {

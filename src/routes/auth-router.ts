@@ -7,7 +7,7 @@ import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 import UAParser from "ua-parser-js";
-import {authSessionsCollection} from "../repositories/db";
+
 
 export const authRouter = Router({})
 
@@ -112,6 +112,6 @@ authRouter.get("/me",
         userId: req.user!.id
     })
 })
-authRouter.get("/all", async (req: Request, res: Response) => {
-    res.send(await authSessionsCollection.find().toArray())
-})
+// authRouter.get("/all", async (req: Request, res: Response) => {
+//     res.send(await authSessionsCollection.find().toArray())
+// })
