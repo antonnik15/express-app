@@ -21,7 +21,7 @@ export const securityDevicesRepository = {
         return;
     },
     async terminateCurrentSessionByDeviceId(userId: string, deviceId: string) {
-        const deletionResult = await authSessionsCollection.deleteOne({userId: userId, deviceId: deviceId});
-        return deletionResult.deletedCount;
+        await authSessionsCollection.deleteOne({userId: userId, deviceId: deviceId});
+        return;
     }
 }

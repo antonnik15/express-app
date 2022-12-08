@@ -5,6 +5,7 @@ import {
 } from "../repositories/security-devices-repositories/security-devices-query-repository";
 import {securityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
 
+
 export const securityDevicesRouter = Router({});
 
 securityDevicesRouter.get("/", async (req: Request, res: Response) => {
@@ -37,11 +38,16 @@ securityDevicesRouter.delete("/:deviceId", async (req: Request, res: Response) =
         res.sendStatus(401);
         return;
     }
-    if (req.params.deviceId !== jwtPayload.deviceId) {
+    const session = await securityDevicesQueryRepository.findSessionByDeviceId(jwtPayload.deviceId);
+    if (!session) {
+        res.sendStatus(404);
+        return;
+    }
+    if (session.userId !== jwtPayload.userId) {
         res.sendStatus(403);
         return;
     }
-    const deletionResult = await securityDevicesRepository.terminateCurrentSessionByDeviceId(jwtPayload.userId, req.params.deviceId);
-    deletionResult ? res.sendStatus(204) : res.sendStatus(404);
+    await securityDevicesRepository.terminateCurrentSessionByDeviceId(jwtPayload.userId, req.params.deviceId);
+    res.sendStatus(204)
     return;
 })

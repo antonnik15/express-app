@@ -17,6 +17,9 @@ export const securityDevicesQueryRepository = {
         const authSessionsArray: OutputSessionType[] = dbAuthSessions.map(sess => this._mapDbSessionsTypeToOutputSessionType(sess))
         return authSessionsArray;
     },
+    async findSessionByDeviceId(deviceId: string): Promise<dbSessionsType | null> {
+        return await authSessionsCollection.findOne({deviceId: deviceId});
+    },
     _mapDbSessionsTypeToOutputSessionType(session: dbSessionsType): OutputSessionType {
         return {
             ip: session.ipAddress,
