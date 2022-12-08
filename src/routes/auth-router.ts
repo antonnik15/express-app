@@ -74,14 +74,14 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    const jwtPayload = await authService.checkRefreshToken(refreshToken,req);
+    const jwtPayload = await authService.checkRefreshToken(refreshToken);
     if (jwtPayload) {
         const accessToken: string = await jwtService.createAccessToken(jwtPayload.userId);
-        const refreshToken: string = await jwtService.createRefreshToken(jwtPayload.userId, jwtPayload.deviceId);
+        const newRefreshToken: string = await jwtService.createRefreshToken(jwtPayload.userId, jwtPayload.deviceId);
 
-        await authService.updateCurrentAuthSession(refreshToken);
+        await authService.updateCurrentAuthSession(newRefreshToken);
 
-        res.cookie('refreshToken', refreshToken, {
+        res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             secure: true
         });
