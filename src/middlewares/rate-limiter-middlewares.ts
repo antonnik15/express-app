@@ -17,5 +17,6 @@ export const rateLimiterMiddleware = (req: Request, res: Response, next: NextFun
         })
         .catch(() => {
             res.sendStatus(429);
+            next()
         })
 }
