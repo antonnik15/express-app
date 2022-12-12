@@ -7,11 +7,13 @@ import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 import UAParser from "ua-parser-js";
+import {rateLimiterMiddleware} from "../middlewares/rate-limiter-middlewares";
 
 
 export const authRouter = Router({})
 
 authRouter.post("/registration",
+    rateLimiterMiddleware,
     ValidationOfUsersInputParameters,
     inputUsersValidationResult,
     userVerification,
@@ -24,7 +26,9 @@ authRouter.post("/registration",
         res.sendStatus(400)
     })
 
-authRouter.post("/registration-confirmation", async (req: Request, res: Response) => {
+authRouter.post("/registration-confirmation",
+    rateLimiterMiddleware,
+    async (req: Request, res: Response) => {
     const confirmationResult = await authService.confirmEmail(req.body.code);
     if (confirmationResult) {
         res.sendStatus(204)
@@ -34,6 +38,7 @@ authRouter.post("/registration-confirmation", async (req: Request, res: Response
 })
 
 authRouter.post("/registration-email-resending",
+    rateLimiterMiddleware,
     ValidationOfUsersInputParameters[2],
     inputUsersValidationResult,
     async (req: Request, res: Response) => {
@@ -46,6 +51,7 @@ authRouter.post("/registration-email-resending",
 })
 
 authRouter.post("/login",
+    rateLimiterMiddleware,
     async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
