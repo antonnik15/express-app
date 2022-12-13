@@ -56,6 +56,12 @@ export type AuthSessionsType = {
     }
 }
 
+export type attemptType = {
+    ipAddress: string
+    url: string
+    issuedAt: number
+    attemptsCount: number
+}
 
 const mongoUri = process.env.MONGOURI
 
@@ -64,8 +70,9 @@ export const db = client.db("hometask3")
 export const postsCollection = db.collection<PostsType>("posts");
 export const blogsCollection = db.collection<BlogsType>("blogs");
 export const usersCollection = db.collection<UserAccountDBType>("users");
-export const commentsCollection = db.collection<CommentsType>("comments")
-export const authSessionsCollection = db.collection<AuthSessionsType>("auth_sessions")
+export const commentsCollection = db.collection<CommentsType>("comments");
+export const authSessionsCollection = db.collection<AuthSessionsType>("auth_sessions");
+export const attemptsCollection = db.collection<attemptType>("attempts")
 
 export async function runDb() {
     try {
