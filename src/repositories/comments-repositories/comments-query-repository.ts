@@ -1,10 +1,9 @@
-import {commentsCollection} from "../db";
-import {ObjectId} from "mongodb";
-
+import {CommentsType, DbCommentsType} from "../mongoose/types";
+import {CommentsModel} from "../mongoose/mongoose-schemes";
 
 export const commentsQueryRepository = {
-    async findCommentById(id: string): Promise<OutputCommentsType | undefined> {
-        const dbComment: DbCommentsType | null = await commentsCollection.findOne({id: id});
+    async findCommentById(id: string): Promise<CommentsType | undefined> {
+        const dbComment: DbCommentsType | null = await CommentsModel.findOne({id: id});
         if (dbComment) {
             return this.mapDbCommentsToOutputCommentsType(dbComment)
         }
@@ -12,7 +11,7 @@ export const commentsQueryRepository = {
     },
 
 
-    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): OutputCommentsType {
+    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): CommentsType {
         return {
             id: dbComments.id,
             content: dbComments.content,
@@ -21,21 +20,4 @@ export const commentsQueryRepository = {
             createdAt: dbComments.createdAt
         }
     }
-}
-
-type OutputCommentsType = {
-    id: string
-    content: string
-    userId: string
-    userLogin: string
-    createdAt: string
-}
-
-type DbCommentsType = {
-    _id: ObjectId
-    id: string
-    content: string
-    userId: string
-    userLogin: string
-    createdAt: string
 }

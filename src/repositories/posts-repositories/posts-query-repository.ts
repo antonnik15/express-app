@@ -1,5 +1,12 @@
-import {commentsCollection, postsCollection} from "../db";
-import {Collection, ObjectId, SortDirection} from "mongodb";
+import {
+    CommentsType,
+    DbCommentsType,
+    DbPostType,
+    OutputObjectType,
+    PostsType,
+    QueryParamsType
+} from "../mongoose/types";
+import {CommentsModel, PostsModel} from "../mongoose/mongoose-schemes";
 
 export const postsQueryRepository = {
 
@@ -8,22 +15,22 @@ export const postsQueryRepository = {
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
-        const dbPosts: DbPostType[] = await postsCollection
+        const dbPosts: DbPostType[] = await PostsModel
             .find({})
             .sort((queryParamsObject.sortBy !== "blogName")
                 ? {[queryParamsObject.sortBy]: queryParamsObject.sortDirection}
                 : {"createdAt": queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize)
-            .toArray()
+            .lean()
 
-        const postsArray: OutPutPostType[] = dbPosts.map((post) => this.mapDbPostToOutPutPostType(post))
+        const postsArray: PostsType[] = dbPosts.map((post) => this.mapDbPostToOutPutPostType(post))
 
-        return await this.createOutputObject({}, queryParamsObject, postsArray, postsCollection)
+        return await this.createOutputObject({}, queryParamsObject, postsArray, PostsModel)
     },
 
-    async findPostById(id: string): Promise<OutPutPostType | undefined> {
-        const postById: DbPostType | null =  await postsCollection.findOne({id: id})
+    async findPostById(id: string): Promise<PostsType | undefined> {
+        const postById: DbPostType | null =  await PostsModel.findOne({id: id})
         if(postById) {
             return this.mapDbPostToOutPutPostType(postById)
         }
@@ -35,15 +42,16 @@ export const postsQueryRepository = {
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
-        const dbPostsForCertainBlog: DbPostType[] = await postsCollection
+        const dbPostsForCertainBlog: DbPostType[] = await PostsModel
             .find({blogId: blogId})
-            .sort(queryParamsObject.sortBy, queryParamsObject.sortDirection)
+            .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
-            .limit(+queryParamsObject.pageSize).toArray()
+            .limit(+queryParamsObject.pageSize)
+            .lean()
 
-        const postsArray: OutPutPostType[] = dbPostsForCertainBlog.map(post => this.mapDbPostToOutPutPostType(post))
+        const postsArray: PostsType[] = dbPostsForCertainBlog.map(post => this.mapDbPostToOutPutPostType(post))
 
-        return await this.createOutputObject({blogId: blogId}, queryParamsObject, postsArray, postsCollection)
+        return await this.createOutputObject({blogId: blogId}, queryParamsObject, postsArray, PostsModel)
     },
 
     async findCommentsForCertainPost(postId: string, query: any) {
@@ -51,15 +59,15 @@ export const postsQueryRepository = {
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
-        const dbCommentsForCertainPost: DbCommentsType[] = await commentsCollection
+        const dbCommentsForCertainPost: DbCommentsType[] = await CommentsModel
             .find({postId: postId})
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
-            .limit(+queryParamsObject.pageSize).toArray()
+            .limit(+queryParamsObject.pageSize).lean();
 
-        const commentsArray: OutputCommentsType[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment))
+        const commentsArray: CommentsType[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment))
 
-        return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, commentsCollection)
+        return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, CommentsModel)
     },
     _createQueryPostsObject(query: any): QueryParamsType {
         return {
@@ -83,8 +91,8 @@ export const postsQueryRepository = {
 
     async createOutputObject(filter: Object,
                              queryParams: QueryParamsType,
-                             array: OutPutPostType[] | OutputCommentsType[],
-                             collection: Collection<any>): Promise<OutputObjectType>{
+                             array: PostsType[] | CommentsType[],
+                             collection: any): Promise<OutputObjectType>{
         return {
             pagesCount: Math.ceil(await collection.count(filter) / +queryParams.pageSize),
             page: +queryParams.pageNumber,
@@ -93,7 +101,7 @@ export const postsQueryRepository = {
             items: array
         }
     },
-    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): OutputCommentsType {
+    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): CommentsType {
         return {
             id: dbComments.id,
             content: dbComments.content,
@@ -103,56 +111,4 @@ export const postsQueryRepository = {
         }
     }
 
-}
-type QueryParamsType = {
-    pageNumber: string
-    pageSize: string
-    sortBy: string
-    sortDirection: SortDirection
-}
-
-type  DbPostType = {
-    _id: ObjectId
-    id: string
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
-    createdAt: string
-}
-type OutPutPostType = {
-    id: string
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
-    createdAt: string
-}
-
-type OutputObjectType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: Array<OutPutPostType | OutputCommentsType>
-}
-
-type DbCommentsType = {
-    _id: ObjectId
-    id: string
-    content: string
-    userId: string
-    userLogin: string
-    createdAt: string
-    postId?: string
-}
-
-type OutputCommentsType = {
-    id: string
-    content: string
-    userId: string
-    userLogin: string
-    createdAt: string
 }

@@ -1,7 +1,6 @@
 import {postsRepository} from "../repositories/posts-repositories/posts-repository";
 import {OutPutUsersType} from "../repositories/users-repositories/users-query-repository";
-import {CommentsType} from "../repositories/db";
-
+import {CommentsType} from "../repositories/mongoose/types";
 
 export const postsService = {
     async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<string> {

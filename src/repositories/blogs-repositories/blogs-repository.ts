@@ -1,16 +1,17 @@
-import {blogsCollection, BlogsType} from "../db";
+import {BlogsType} from "../mongoose/types";
+import {BlogsModel} from "../mongoose/mongoose-schemes";
 
 
 export const blogsRepository = {
     async createNewBlogs(blog: BlogsType) {
-        await blogsCollection.insertOne(blog)
+        await BlogsModel.create(blog)
         return;
     },
    async updateBlogById(id: string, name: string,
                         description: string,
                         websiteUrl: string): Promise<number> {
 
-       const resultOfChange = await blogsCollection.updateOne({id: id},
+       const resultOfChange = await BlogsModel.updateOne({id: id},
            {
                $set: {
                    name: name,
@@ -22,7 +23,7 @@ export const blogsRepository = {
        return resultOfChange.modifiedCount;
    },
     async deleteBlogsById(id: string): Promise<number> {
-        const deletionResult = await blogsCollection.deleteOne({id: id});
+        const deletionResult = await BlogsModel.deleteOne({id: id});
         return deletionResult.deletedCount;
     }
 }

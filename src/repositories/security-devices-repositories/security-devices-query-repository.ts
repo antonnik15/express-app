@@ -1,4 +1,4 @@
-import {authSessionsCollection} from "../db";
+import {authSessionsCollection} from "../mongoose/db";
 import {ObjectId} from "mongodb";
 
 export const securityDevicesQueryRepository = {

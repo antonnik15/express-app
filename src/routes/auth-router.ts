@@ -8,7 +8,6 @@ import {authMiddleware} from "../middlewares/auth-middleware";
 import {authService} from "../domain/auth-service";
 import UAParser from "ua-parser-js";
 import {rateLimiterMiddleware} from "../middlewares/rate-limiter-middlewares";
-import {attemptsCollection} from "../repositories/db";
 
 
 export const authRouter = Router({})
@@ -118,8 +117,4 @@ authRouter.get("/me",
         login: req.user!.login,
         userId: req.user!.id
     })
-})
-
-authRouter.get("/all", async (req: Request, res: Response) => {
-    res.send(await attemptsCollection.find().toArray())
 })

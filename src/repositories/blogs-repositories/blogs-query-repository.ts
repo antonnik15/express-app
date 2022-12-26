@@ -1,5 +1,5 @@
-import {blogsCollection} from "../db";
-import {ObjectId, SortDirection} from "mongodb";
+import {BlogsType, DbBlogType, QueryParamsType} from "../mongoose/types";
+import {BlogsModel} from "../mongoose/mongoose-schemes";
 
 
 export const blogsQueryRepository = {
@@ -13,25 +13,25 @@ export const blogsQueryRepository = {
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize)
 
-        const dbBlogs: DbBlogType[] = await blogsCollection
+        const dbBlogs: DbBlogType[] = await BlogsModel
             .find(filter)
             .sort({[queryParamsObject.sortBy] : queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
-            .limit(+queryParamsObject.pageSize).toArray()
+            .limit(+queryParamsObject.pageSize).lean();
 
-        const blogsArray: OutputBlogType[] = dbBlogs.map((blog: DbBlogType) => this.mapDbBlogTypeToOutputBlogType(blog))
+        const blogsArray: BlogsType[] = dbBlogs.map((blog: DbBlogType) => this.mapDbBlogTypeToOutputBlogType(blog))
 
         return {
-            pagesCount: Math.ceil(await blogsCollection.count(filter, {}) / (+queryParamsObject.pageSize)),
+            pagesCount: Math.ceil(await BlogsModel.count(filter) / (+queryParamsObject.pageSize)),
             page: +queryParamsObject.pageNumber,
             pageSize: +queryParamsObject.pageSize,
-            totalCount: await blogsCollection.count(filter, {}),
+            totalCount: await BlogsModel.count(filter),
             items: blogsArray
         }
     },
 
-    async findBlogById(id: string): Promise<OutputBlogType | undefined> {
-        const blogById: DbBlogType | null = await blogsCollection.findOne({id: id})
+    async findBlogById(id: string): Promise<BlogsType | undefined> {
+        const blogById: DbBlogType | null = await BlogsModel.findOne({id: id})
         if (blogById) return this.mapDbBlogTypeToOutputBlogType(blogById)
     },
 
@@ -44,7 +44,7 @@ export const blogsQueryRepository = {
             sortDirection: query.sortDirection ? query.sortDirection : 'desc'
         }
     },
-    mapDbBlogTypeToOutputBlogType(dbBlog: DbBlogType): OutputBlogType {
+    mapDbBlogTypeToOutputBlogType(dbBlog: DbBlogType): BlogsType {
         return {
             id: dbBlog.id,
             name: dbBlog.name,
@@ -53,29 +53,4 @@ export const blogsQueryRepository = {
             createdAt: dbBlog.createdAt
         }
     }
-}
-
-type OutputBlogType ={
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-}
-
-type DbBlogType ={
-    _id: ObjectId
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-}
-
-export type QueryParamsType = {
-    searchNameTerm?: string | null
-    pageNumber: string
-    pageSize: string
-    sortBy: string
-    sortDirection: SortDirection
 }

@@ -1,16 +1,16 @@
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid"
 import add from "date-fns/add"
-import {UserAccountDBType, usersRepository} from "../repositories/users-repositories/users-repository";
+import {usersRepository} from "../repositories/users-repositories/users-repository";
 import {emailAdapter} from "../adapter/email-adapter";
 import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
 import {jwtService} from "../application/jwt-service";
-import {AuthSessionsType} from "../repositories/db";
 import {securityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
 import {
     dbSessionsType,
     securityDevicesQueryRepository
 } from "../repositories/security-devices-repositories/security-devices-query-repository";
+import {AuthSessionsType, UserAccountDBType} from "../repositories/mongoose/types";
 
 export const authService = {
     async createNewUser(login: string, password: string, email: string) {

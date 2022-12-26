@@ -1,11 +1,10 @@
-import {SortDirection} from "mongodb";
-import {usersCollection} from "../db";
-
+import {OutputObjectType, QueryParamsTypeForUsers, UserAccountDBType, UserType} from "../mongoose/types";
+import {UserModel} from "../mongoose/mongoose-schemes";
 
 
 export const usersQueryRepository = {
     async findAllUsers(query: any): Promise<OutputObjectType> {
-        const queryParamsObject: QueryParamsType = this._createQueryParamsObject(query)
+        const queryParamsObject: QueryParamsTypeForUsers = this._createQueryParamsObject(query)
 
         let filter = {}
         if (queryParamsObject.searchLoginTerm || queryParamsObject.searchEmailTerm) {
@@ -17,13 +16,13 @@ export const usersQueryRepository = {
 
         const countOfSkipElem: number = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
 
-        const dbUsers: UserAccountDBType[] = await usersCollection.find(filter)
+        const dbUsers: UserAccountDBType[] = await UserModel.find(filter)
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize)
-            .toArray()
+            .lean()
 
-        const usersArray: OutPutUsersType[] = dbUsers.map(user => this.mapDbUsersTypeToOutputUsersType(user))
+        const usersArray: UserType[] = dbUsers.map(user => this.mapDbUsersTypeToOutputUsersType(user))
 
         return await this._createOutputObject(filter,
             +queryParamsObject.pageSize,
@@ -31,19 +30,19 @@ export const usersQueryRepository = {
             usersArray)
 
     },
-    async findUserById(id: string): Promise<OutPutUsersType | undefined> {
-        const user = await usersCollection.findOne({id: id});
+    async findUserById(id: string): Promise<UserType | undefined> {
+        const user = await UserModel.findOne({id: id});
         if (user) {
             return this.mapDbUsersTypeToOutputUsersType(user)
         }
         return;
     },
     async findRefreshTokenForUserById(id: string) {
-        const user = await usersCollection.findOne({id: id})
+        const user = await UserModel.findOne({id: id})
         return user?.refreshToken;
     },
     async findUserByLoginOrEmail(loginOrEmail: string) {
-        const user = await usersCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]});
+        const user = await UserModel.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]});
         if(!user) return null;
         return {
             id: user.id,
@@ -52,10 +51,10 @@ export const usersQueryRepository = {
             isConfirmed: user.isConfirmed
         }
     },
-    async findUserByConfirmationCode(code: string) {
-        return await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+    findUserByConfirmationCode(code: string) {
+        return UserModel.findOne({"emailConfirmation.confirmationCode": code})
     },
-    _createQueryParamsObject(query: any): QueryParamsType {
+    _createQueryParamsObject(query: any): QueryParamsTypeForUsers {
         return {
             pageNumber: (query.pageNumber) ? query.pageNumber : '1',
             pageSize: (query.pageSize) ? query.pageSize : '10',
@@ -66,7 +65,7 @@ export const usersQueryRepository = {
         }
     },
 
-    mapDbUsersTypeToOutputUsersType(dbUser: UserAccountDBType): OutPutUsersType {
+    mapDbUsersTypeToOutputUsersType(dbUser: UserAccountDBType): UserType {
             return {
                 id: dbUser.id,
                 login: dbUser.accountData.login,
@@ -78,55 +77,13 @@ export const usersQueryRepository = {
     async _createOutputObject(filter: Object,
                                pageSize: number,
                                pageNumber: number,
-                               usersArray: OutPutUsersType[]): Promise<OutputObjectType> {
+                               usersArray: UserType[]): Promise<OutputObjectType> {
         return {
-            pagesCount: Math.ceil(await usersCollection.count(filter) / pageSize),
+            pagesCount: Math.ceil(await UserModel.count(filter) / pageSize),
             page: pageNumber,
             pageSize: pageSize,
-            totalCount: await usersCollection.count(filter),
+            totalCount: await UserModel.count(filter),
             items: usersArray
         }
     },
-}
-
-export type UserAccountDBType = {
-    id: string
-    accountData: {
-        login: string
-        email: string
-        password: string
-        createdAt: string
-    },
-    emailConfirmation: {
-        confirmationCode: string
-        expirationDate: Date
-    },
-    isConfirmed: boolean
-    refreshToken?: string
-};
-
-
-
-export type OutPutUsersType = {
-    id: string
-    login: string
-    email: string
-    createdAt: string
-}
-
-type OutputObjectType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: OutPutUsersType[]
-}
-
-type QueryParamsType = {
-    pageNumber: string
-    pageSize: string
-    sortBy: string
-    sortDirection: SortDirection
-    searchLoginTerm: string
-    searchEmailTerm: string
 }

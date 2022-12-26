@@ -1,8 +1,9 @@
-import {commentsCollection, CommentsType, postsCollection, PostsType} from "../db";
+import {CommentsType, PostsType} from "../mongoose/types";
+import {CommentsModel, PostsModel} from "../mongoose/mongoose-schemes";
 
 export const postsRepository = {
     async createPost(post: PostsType) {
-        await postsCollection.insertOne(post)
+        await PostsModel.create(post)
         return;
     },
     async updatePost(id: string, title: string,
@@ -10,7 +11,7 @@ export const postsRepository = {
                      content: string,
                      blogId: string): Promise<number> {
 
-        const resultOfChange = await postsCollection.updateOne({id: id},
+        const resultOfChange = await PostsModel.updateOne({id: id},
             {
                 $set: {
                     title: title,
@@ -24,11 +25,11 @@ export const postsRepository = {
     },
 
     async deletePostById(id: string): Promise<number> {
-        const deletionResult = await postsCollection.deleteOne({id: id})
+        const deletionResult = await PostsModel.deleteOne({id: id})
         return deletionResult.deletedCount;
     },
     async createNewCommentForPost(comment: CommentsType) {
-        await commentsCollection.insertOne(comment);
+        await CommentsModel.create(comment);
         return;
     }
 }

@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from "express"
 import bodyParser from "body-parser"
 import cookieParser from 'cookie-parser'
-import {runDb} from "./repositories/db";
+import {runDb} from "./repositories/mongoose/db";
 import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {deleteRouter} from "./routes/delete-all-data";

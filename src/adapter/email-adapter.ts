@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import {UserAccountDBType} from "../repositories/users-repositories/users-repository";
+import {UserAccountDBType} from "../repositories/mongoose/types";
 
 
 export const emailAdapter = {

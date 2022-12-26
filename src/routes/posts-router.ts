@@ -10,7 +10,7 @@ import {authMiddleware} from "../middlewares/auth-middleware";
 import {
     inputCommentsValidationResult, ValidationOfCommentsInputParameters
 } from "../middlewares/input-comments-validation-middlewares";
-import {CommentsType} from "../repositories/db";
+import {CommentsType} from "../repositories/mongoose/types";
 
 
 
