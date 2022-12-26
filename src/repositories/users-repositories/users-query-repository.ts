@@ -79,10 +79,10 @@ export const usersQueryRepository = {
                                pageNumber: number,
                                usersArray: UserType[]): Promise<OutputObjectType> {
         return {
-            pagesCount: Math.ceil(await UserModel.count(filter) / pageSize),
+            pagesCount: Math.ceil(await UserModel.countDocuments(filter) / pageSize),
             page: pageNumber,
             pageSize: pageSize,
-            totalCount: await UserModel.count(filter),
+            totalCount: await UserModel.countDocuments(filter),
             items: usersArray
         }
     },
