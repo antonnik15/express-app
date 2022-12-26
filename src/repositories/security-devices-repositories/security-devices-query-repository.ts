@@ -1,9 +1,9 @@
-import {authSessionsCollection} from "../mongoose/db";
-import {ObjectId} from "mongodb";
+import {AuthModel} from "../mongoose/mongoose-schemes";
+import {dbSessionsType, SessionType} from "../mongoose/types";
 
 export const securityDevicesQueryRepository = {
     async findSessionByJWTPayload(jwtPayload: any) {
-        const authSession: dbSessionsType | null = await authSessionsCollection.findOne({
+        const authSession: dbSessionsType | null = await AuthModel.findOne({
             userId: jwtPayload.userId,
             issuedAt: jwtPayload.iat,
             exp: jwtPayload.exp,
@@ -13,14 +13,14 @@ export const securityDevicesQueryRepository = {
         return authSession;
     },
     async findUserAuthSessions(userId: string) {
-        const dbAuthSessions: dbSessionsType[] = await authSessionsCollection.find({userId: userId}).toArray();
-        const authSessionsArray: OutputSessionType[] = dbAuthSessions.map(sess => this._mapDbSessionsTypeToOutputSessionType(sess))
+        const dbAuthSessions: dbSessionsType[] = await AuthModel.find({userId: userId}).lean();
+        const authSessionsArray: SessionType[] = dbAuthSessions.map(sess => this._mapDbSessionsTypeToOutputSessionType(sess))
         return authSessionsArray;
     },
     async findSessionByDeviceId(deviceId: string): Promise<dbSessionsType | null> {
-        return await authSessionsCollection.findOne({deviceId: deviceId});
+        return AuthModel.findOne({deviceId: deviceId});
     },
-    _mapDbSessionsTypeToOutputSessionType(session: dbSessionsType): OutputSessionType {
+    _mapDbSessionsTypeToOutputSessionType(session: dbSessionsType): SessionType {
         return {
             ip: session.ipAddress,
             title: session.deviceName.name,
@@ -30,23 +30,3 @@ export const securityDevicesQueryRepository = {
     }
 }
 
-export type dbSessionsType = {
-    _id: ObjectId
-    userId: string
-    sessionId: string
-    issuedAt: string
-    exp: string
-    deviceId: string
-    ipAddress: string
-    deviceName: {
-        name: string
-        version: string
-    }
-}
-
-type OutputSessionType = {
-    ip: string
-    title: string
-    lastActiveDate: string
-    deviceId: string
-}

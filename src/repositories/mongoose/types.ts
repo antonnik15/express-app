@@ -120,6 +120,27 @@ export type AuthSessionsType = {
     }
 }
 
+export type dbSessionsType = {
+    _id: ObjectId
+    userId: string
+    sessionId: string
+    issuedAt: string
+    exp: string
+    deviceId: string
+    ipAddress: string
+    deviceName: {
+        name: string
+        version: string
+    }
+}
+
+export type SessionType = {
+    ip: string
+    title: string
+    lastActiveDate: string
+    deviceId: string
+}
+
 export type AttemptType = {
     ipAddress: string
     url: string
