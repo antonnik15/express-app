@@ -28,9 +28,13 @@ export const ValidationOfUsersInputParameters = [
         "field": "email"
     })
 ]
-export const ValidationOfNewPassword = body("newPassword").trim()
-    .isString()
-    .isLength({min: 6, max: 20})
+export const ValidationOfNewPassword = body("newPassword").trim().isString().withMessage({
+    "message": "password is not a string",
+    "field": "newPassword"
+}).isLength({min: 6, max: 20}).withMessage({
+    "message": "length of password more than 20 or less than 6 symbols",
+    "field": "newPassword"
+})
 
 export const userVerification = async (req: Request, res: Response, next: NextFunction) => {
     if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
@@ -56,7 +60,7 @@ export const inputUsersValidationResult = (req: Request, res: Response, next: Ne
 export const emailOrPasswordValidationResult = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        res.sendStatus(400)
+        res.status(400).send({errorsMessages: errors.array().map(err => err.msg)})
     } else {
         next();
     }
