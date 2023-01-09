@@ -17,8 +17,8 @@ export const usersRepository = {
         const resultOfChange = await UserModel.updateOne({id: id}, {$set: {isConfirmed: true}})
         return resultOfChange.modifiedCount;
     },
-    async updatePassword(id: string, password: string) {
-        const resultOfChange = await UserModel.updateOne({id: id}, {$set: {"accountData.password": password}})
+    async updatePassword(id: string, passwordHash: string) {
+        const resultOfChange = await UserModel.updateOne({id: id}, {$set: {"accountData.password": passwordHash}})
         return resultOfChange.modifiedCount;
     },
     async updateConfirmationCode(id: string) {

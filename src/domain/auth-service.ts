@@ -68,7 +68,8 @@ export const authService = {
         const user = await usersQueryRepository.findUserByRecoveryCode(recoveryCode);
         if (!user) return null;
         if (user.recoveryCodeInformation!.expirationDate! < new Date()) return null;
-        return await usersRepository.updatePassword(user.id, password);
+        const passwordHash = await this._generateHash(password)
+        return await usersRepository.updatePassword(user.id, passwordHash);
     },
     async checkRefreshToken(refreshToken: string) {
         const jwtPayload = jwtService.getJWTPayload(refreshToken);
