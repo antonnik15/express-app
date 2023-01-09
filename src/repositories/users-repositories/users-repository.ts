@@ -17,6 +17,10 @@ export const usersRepository = {
         const resultOfChange = await UserModel.updateOne({id: id}, {$set: {isConfirmed: true}})
         return resultOfChange.modifiedCount;
     },
+    async updatePassword(id: string, password: string) {
+        const resultOfChange = await UserModel.updateOne({id: id}, {$set: {"accountData.password": password}})
+        return resultOfChange.modifiedCount;
+    },
     async updateConfirmationCode(id: string) {
         await UserModel.updateOne({id: id}, {
             $set: {
@@ -27,5 +31,15 @@ export const usersRepository = {
             }
         })
         return;
+    },
+    async createRecoveryCode(id: string): Promise<string> {
+        const recoveryCode = uuidv4();
+        await UserModel.updateOne({id: id}, {
+            $set: {
+                "recoveryCodeInformation.recoveryCode": recoveryCode,
+                "recoveryCodeInformation.expirationDate": add(new Date(), {hours: 1})
+            }
+        });
+        return recoveryCode;
     }
 }

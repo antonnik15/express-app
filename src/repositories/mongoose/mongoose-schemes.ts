@@ -47,7 +47,11 @@ const usersSchema = new Schema<UserAccountDBType>({
         expirationDate: Date
     },
     isConfirmed: {type: Boolean},
-    refreshToken: {type: String}
+    refreshToken: {type: String},
+    recoveryCodeInformation: {
+        recoveryCode: {type: String},
+        expirationDate: Date
+    }
 })
 export const UserModel = mongoose.model('User', usersSchema)
 

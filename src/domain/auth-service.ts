@@ -7,10 +7,9 @@ import {usersQueryRepository} from "../repositories/users-repositories/users-que
 import {jwtService} from "../application/jwt-service";
 import {securityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
 import {
-    dbSessionsType,
     securityDevicesQueryRepository
 } from "../repositories/security-devices-repositories/security-devices-query-repository";
-import {AuthSessionsType, UserAccountDBType} from "../repositories/mongoose/types";
+import {AuthSessionsType, dbSessionsType, UserAccountDBType} from "../repositories/mongoose/types";
 
 export const authService = {
     async createNewUser(login: string, password: string, email: string) {
@@ -57,6 +56,19 @@ export const authService = {
     async updateConfirmationCode(id: string) {
         await usersRepository.updateConfirmationCode(id);
         return;
+    },
+    async sendRecoveryCode(email: string) {
+        const user = await usersQueryRepository.findUserByLoginOrEmail(email);
+        if (!user) return null;
+        const recoveryCode: string = await usersRepository.createRecoveryCode(user.id);
+        await emailAdapter.sendRecoveryCode(user, recoveryCode);
+        return;
+    },
+    async recoveryPassword(password: string, recoveryCode: string): Promise<number | null> {
+        const user = await usersQueryRepository.findUserByRecoveryCode(recoveryCode);
+        if (!user) return null;
+        if (user.recoveryCodeInformation!.expirationDate! < new Date()) return null;
+        return await usersRepository.updatePassword(user.id, password);
     },
     async checkRefreshToken(refreshToken: string) {
         const jwtPayload = jwtService.getJWTPayload(refreshToken);

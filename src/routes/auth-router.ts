@@ -1,7 +1,8 @@
 import {Response, Request, Router} from "express";
 import {usersService} from "../domain/users-service";
 import {
-    inputUsersValidationResult, userVerification, ValidationOfUsersInputParameters
+    emailOrPasswordValidationResult,
+    inputUsersValidationResult, userVerification, ValidationOfNewPassword, ValidationOfUsersInputParameters
 } from "../middlewares/input-users-validation-middlewares";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
@@ -118,3 +119,25 @@ authRouter.get("/me",
         userId: req.user!.id
     })
 })
+
+authRouter.post('/password-recovery',
+    rateLimiterMiddleware,
+    ValidationOfUsersInputParameters[2],
+    emailOrPasswordValidationResult,
+    async (req: Request, res: Response) => {
+        await authService.sendRecoveryCode(req.body.email);
+        res.sendStatus(204);
+    })
+
+authRouter.post('/new-password',
+    rateLimiterMiddleware,
+    ValidationOfNewPassword,
+    emailOrPasswordValidationResult,
+    async (req: Request, res: Response) => {
+        const recoveryPasswordResult = await authService.recoveryPassword(req.body.newPassword, req.body.recoveryCode);
+        if (recoveryPasswordResult) {
+            res.sendStatus(204)
+            return;
+        }
+        res.sendStatus(400);
+    })

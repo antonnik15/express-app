@@ -86,4 +86,7 @@ export const usersQueryRepository = {
             items: usersArray
         }
     },
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDBType |null> {
+        return UserModel.findOne({'recoveryCodeInformation.recoveryCode': recoveryCode});
+    }
 }

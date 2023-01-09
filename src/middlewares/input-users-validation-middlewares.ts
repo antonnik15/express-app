@@ -28,6 +28,9 @@ export const ValidationOfUsersInputParameters = [
         "field": "email"
     })
 ]
+export const ValidationOfNewPassword = body("newPassword").trim()
+    .isString()
+    .isLength({min: 6, max: 20})
 
 export const userVerification = async (req: Request, res: Response, next: NextFunction) => {
     if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
@@ -49,3 +52,13 @@ export const inputUsersValidationResult = (req: Request, res: Response, next: Ne
         next()
     }
 }
+
+export const emailOrPasswordValidationResult = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        res.sendStatus(400)
+    } else {
+        next();
+    }
+}
+

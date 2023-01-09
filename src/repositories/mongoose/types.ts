@@ -88,7 +88,11 @@ export type UserAccountDBType = {
         expirationDate: Date
     },
     isConfirmed: boolean
-    refreshToken?: string
+    refreshToken?: string,
+    recoveryCodeInformation?: {
+        recoveryCode?: string,
+        expirationDate?: Date
+    }
 };
 
 export type UserType = {
