@@ -139,5 +139,5 @@ authRouter.post('/new-password',
             res.sendStatus(204)
             return;
         }
-        res.sendStatus(400);
+        res.status(400).send({ errorsMessages: [{ message: "recoveryCode is incorrect", field: "recoveryCode" }] });
     })
