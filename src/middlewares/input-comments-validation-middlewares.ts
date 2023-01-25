@@ -17,6 +17,8 @@ export const ValidationOfCommentsInputParameters = [
                 "message": "likeStatus incorrect",
                 "field": "likeStatus"
             })
+        } else {
+            return Promise.resolve()
         }
     })
 ];
