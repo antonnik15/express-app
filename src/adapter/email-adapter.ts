@@ -1,9 +1,8 @@
 import nodemailer from 'nodemailer'
-import {UserAccountDBType} from "../repositories/mongoose/types";
+import {UserAccountDB} from "../repositories/mongoose/types";
 
-
-export const emailAdapter = {
-    async sendEmailConfirmationMessage(user: UserAccountDBType) {
+export class EmailAdapter {
+    async sendEmailConfirmationMessage(user: UserAccountDB) {
 
         const transport = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -21,8 +20,8 @@ export const emailAdapter = {
             text: `https://somesite.com/confirm-email?code=${user.emailConfirmation.confirmationCode}`
         }
         await transport.sendMail(mailOptions);
-    },
-    async sendRecoveryCode(user: UserAccountDBType, recoveryCode: string) {
+    }
+    async sendRecoveryCode(user: UserAccountDB, recoveryCode: string) {
 
         const transport = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -42,6 +41,3 @@ export const emailAdapter = {
         await transport.sendMail(mailOptions);
     }
 }
-
-
-

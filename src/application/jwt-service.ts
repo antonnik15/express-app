@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from "uuid";
 
-export const jwtService = {
+export class JwtService {
     async createAccessToken(id: string) {
-        return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "10s"})
-    },
+        return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "10m"})
+    }
     async createRefreshToken(userId: string, deviceId: string = uuidv4()): Promise<string> {
-        return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_REFRESH_SECRET!, {expiresIn: '20s'});
-    },
+        return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_REFRESH_SECRET!, {expiresIn: '20m'});
+    }
     getUserIdByToken(token: string) {
         try {
             const result: any = jwt.verify(token, process.env.JWT_SECRET!)
@@ -15,7 +15,7 @@ export const jwtService = {
         } catch (err) {
             return null;
         }
-    },
+    }
     getJWTPayload(token: string) {
         try {
             const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET!)

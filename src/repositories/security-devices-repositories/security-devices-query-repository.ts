@@ -1,7 +1,7 @@
 import {AuthModel} from "../mongoose/mongoose-schemes";
 import {dbSessionsType, SessionType} from "../mongoose/types";
 
-export const securityDevicesQueryRepository = {
+export class SecurityDevicesQueryRepository {
     async findSessionByJWTPayload(jwtPayload: any) {
         const authSession: dbSessionsType | null = await AuthModel.findOne({
             userId: jwtPayload.userId,
@@ -11,22 +11,21 @@ export const securityDevicesQueryRepository = {
         });
         if (!authSession) return null;
         return authSession;
-    },
-    async findUserAuthSessions(userId: string) {
+    }
+
+    async findUserAuthSessions(userId: string): Promise<SessionType[]> {
         const dbAuthSessions: dbSessionsType[] = await AuthModel.find({userId: userId}).lean();
-        const authSessionsArray: SessionType[] = dbAuthSessions.map(sess => this._mapDbSessionsTypeToOutputSessionType(sess))
-        return authSessionsArray;
-    },
+        return dbAuthSessions.map(sess => this._mapDbSessionsTypeToOutputSessionType(sess));
+    }
     async findSessionByDeviceId(deviceId: string): Promise<dbSessionsType | null> {
         return AuthModel.findOne({deviceId: deviceId});
-    },
+    }
     _mapDbSessionsTypeToOutputSessionType(session: dbSessionsType): SessionType {
-        return {
-            ip: session.ipAddress,
-            title: session.deviceName.name,
-            lastActiveDate: new Date(+session.issuedAt * 1000).toISOString(),
-            deviceId: session.deviceId
-        }
+        return new SessionType(
+            session.ipAddress,
+            session.deviceName.name,
+            new Date(+session.issuedAt * 1000).toISOString(),
+            session.deviceId)
     }
 }
 

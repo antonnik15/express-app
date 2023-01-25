@@ -1,6 +1,6 @@
 import {body, validationResult} from "express-validator";
-import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
 import {NextFunction, Request, Response} from "express";
+import {BlogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
 
 export const ValidationOfPostsInputParameters = [
     body("title").trim().isString().withMessage({
@@ -26,6 +26,7 @@ export const ValidationOfPostsInputParameters = [
 
 export const CustomValidationOfPostInputParameters = body("blogId")
     .custom(async (id) => {
+        const blogsQueryRepository = new BlogsQueryRepository();
         const blog = await blogsQueryRepository.findBlogById(id)
         if (blog) {
             return true;

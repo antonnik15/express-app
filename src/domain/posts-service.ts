@@ -1,43 +1,49 @@
-import {postsRepository} from "../repositories/posts-repositories/posts-repository";
-import {CommentsType, UserType} from "../repositories/mongoose/types";
+import {PostsRepository} from "../repositories/posts-repositories/posts-repository";
+import {CommentsType, PostsType, UserType} from "../repositories/mongoose/types";
 
-export const postsService = {
+export class PostsService {
+    constructor(public postsRepository: PostsRepository) {
+    }
     async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<string> {
-        const newPost = {
-            id: (+new Date()).toString(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: "Travelling",
-            createdAt: (new Date()).toISOString()
-        }
-        await postsRepository.createPost(newPost);
+
+        const newPost: PostsType = new PostsType((+new Date()).toString(),
+            title,
+            shortDescription,
+            content,
+            blogId,
+            'Travelling',
+            new Date().toISOString())
+
+        await this.postsRepository.createPost(newPost);
         return newPost.id;
-    },
+    }
     async updatePostById(id: string, title: string,
                          shortDescription: string,
                          content: string, blogId: string) : Promise<number>{
 
-        return await postsRepository.updatePost(id, title, shortDescription, content, blogId)
+        return await this.postsRepository.updatePost(id, title, shortDescription, content, blogId)
 
-    },
+    }
     async deletePostById(id: string) : Promise<number>{
-        return postsRepository.deletePostById(id)
-    },
+        return this.postsRepository.deletePostById(id)
+    }
 
     async createNewCommentForPost(postId: string,
                                   content: string,
                                   user: UserType): Promise<CommentsType> {
-        const newComment: CommentsType = {
-            id: (+new Date()).toString(),
-            content: content,
-            userId: user.id,
-            userLogin: user.login,
-            createdAt: new Date().toISOString(),
-            postId: postId
-        }
-        await postsRepository.createNewCommentForPost({...newComment});
+        const newComment: CommentsType = new CommentsType(
+            (+new Date()).toString(),
+            content,
+            {userId: user.id, userLogin: user.login},
+            new Date().toISOString(),
+            {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None'
+            },
+            postId)
+
+        await this.postsRepository.createNewCommentForPost({...newComment});
         delete newComment.postId;
         return newComment
     }

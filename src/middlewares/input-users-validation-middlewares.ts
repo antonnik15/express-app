@@ -1,6 +1,6 @@
 import {body, validationResult} from "express-validator";
 import {Response, Request, NextFunction} from "express";
-import {usersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
 
 
 export const ValidationOfUsersInputParameters = [
@@ -37,11 +37,11 @@ export const ValidationOfNewPassword = body("newPassword").trim().isString().wit
 })
 
 export const userVerification = async (req: Request, res: Response, next: NextFunction) => {
-    if (await usersQueryRepository.findUserByLoginOrEmail(req.body.email)) {
+    if (await new UsersQueryRepository().findUserByLoginOrEmail(req.body.email)) {
         res.status(400).send({ errorsMessages: [{ message: "this user is exist", field: "email" }]});
         return;
     }
-    if (await usersQueryRepository.findUserByLoginOrEmail(req.body.login)) {
+    if (await new UsersQueryRepository().findUserByLoginOrEmail(req.body.login)) {
         res.status(400).send({ errorsMessages: [{ message: "this user is exist", field: "login" }]});
         return;
     }

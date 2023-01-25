@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
-import {AttemptType, AuthSessionsType, BlogsType, CommentsType, PostsType, UserAccountDBType} from "./types";
+import {
+    AttemptType,
+    AuthSessionsType,
+    BlogType,
+    CommentsType,
+    PostsType,
+    UserAccountDB,
+} from "./types";
 
 const Schema = mongoose.Schema;
 
-const blogsSchema = new Schema<BlogsType>({
+const blogsSchema = new Schema<BlogType>({
     id: {type: String},
     name: {type: String},
     description: {type: String},
@@ -27,14 +34,14 @@ export const PostsModel = mongoose.model("Post", postsSchema)
 const commentsSchema = new Schema<CommentsType>({
     id: {type: String},
     content: {type: String},
-    userId: {type: String},
-    userLogin: {type: String},
-    createdAt: {type: String},
+    commentatorInfo: {type: {userId: String, userLogin: String}},
+    createdAt: String,
+    likesInfo: {type: {likesCount: Number, dislikesCount: Number, myStatus: String}},
     postId: {type: String}
 })
 export const CommentsModel = mongoose.model("Comment", commentsSchema);
 
-const usersSchema = new Schema<UserAccountDBType>({
+const usersSchema = new Schema<UserAccountDB>({
     id: {type: String},
     accountData: {
         login: {type: String},

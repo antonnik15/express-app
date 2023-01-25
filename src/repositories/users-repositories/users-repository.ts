@@ -1,26 +1,25 @@
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {UserAccountDBType} from "../mongoose/types";
 import {UserModel} from "../mongoose/mongoose-schemes";
+import {UserAccountDB} from "../mongoose/types";
 
-
-export const usersRepository = {
-    async createNewUser(user: UserAccountDBType) {
+export class UsersRepository {
+    async createNewUser(user: UserAccountDB) {
         await UserModel.create(user)
         return;
-    },
+    }
     async deleteUserById(id: string): Promise<number> {
         const deletionResult = await UserModel.deleteOne({id: id})
         return deletionResult.deletedCount;
-    },
+    }
     async updateConfirmation(id: string) {
         const resultOfChange = await UserModel.updateOne({id: id}, {$set: {isConfirmed: true}})
         return resultOfChange.modifiedCount;
-    },
+    }
     async updatePassword(id: string, passwordHash: string) {
         const resultOfChange = await UserModel.updateOne({id: id}, {$set: {"accountData.password": passwordHash}})
         return resultOfChange.modifiedCount;
-    },
+    }
     async updateConfirmationCode(id: string) {
         await UserModel.updateOne({id: id}, {
             $set: {
@@ -31,7 +30,7 @@ export const usersRepository = {
             }
         })
         return;
-    },
+    }
     async createRecoveryCode(id: string): Promise<string> {
         const recoveryCode = uuidv4();
         await UserModel.updateOne({id: id}, {
@@ -43,3 +42,4 @@ export const usersRepository = {
         return recoveryCode;
     }
 }
+

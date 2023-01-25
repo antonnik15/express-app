@@ -4,7 +4,12 @@ import mongoose from "mongoose";
 
 export const deleteRouter = Router({})
 
-deleteRouter.delete("/",  (req: Request, res: Response) => {
-    mongoose.connection.db.dropDatabase()
-    res.sendStatus(204)
-})
+class DeleteController {
+    dropDB(req: Request, res: Response) {
+        mongoose.connection.db.dropDatabase()
+        res.sendStatus(204)
+    }
+}
+
+const deleteController = new DeleteController();
+deleteRouter.delete("/", deleteController.dropDB.bind(deleteController))

@@ -9,6 +9,15 @@ export const ValidationOfCommentsInputParameters = [
     }).isLength({min: 20, max: 300}).withMessage({
         "message": "Length of content more than 15 or less than 1 symbol",
         "field": "content"
+    }),
+    body('likeStatus').custom((likeStatus) => {
+        console.log(likeStatus)
+        if (!["Like", "Dislike", "None"].includes(likeStatus)){
+            return Promise.reject({
+                "message": "likeStatus incorrect",
+                "field": "likeStatus"
+            })
+        }
     })
 ];
 

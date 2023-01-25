@@ -1,101 +1,43 @@
-import { Request, Response, Router} from "express";
+import {Router} from "express";
 import {
-    ValidationOfBlogsInputParameters,
-    InputBlogsValidationResult
+    InputBlogsValidationResult,
+    ValidationOfBlogsInputParameters
 } from "../middlewares/input-blogs-validation-middlewares";
 import {BasicAuthorization} from "../middlewares/basic-authorization";
-import {blogsService} from "../domain/blogs-service";
-import {blogsQueryRepository} from "../repositories/blogs-repositories/blogs-query-repository";
-import {postsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
-import {postsService} from "../domain/posts-service";
 import {
     InputPostsValidationResult,
     ValidationOfPostsInputParameters
 } from "../middlewares/input-posts-validation-middlewares";
+import {blogsController} from "../application/composition-root";
 
 
 export const blogsRouter = Router({})
 
-blogsRouter.get("/", async (req: Request, res: Response) => {
-    const query = req.query;
-    res.status(200).send(await blogsQueryRepository.findAllBlogs(query))
-})
+blogsRouter.get("/", blogsController.getBlogs.bind(blogsController))
 
 blogsRouter.post("/",
     BasicAuthorization,
     ValidationOfBlogsInputParameters,
     InputBlogsValidationResult,
-    async (req: Request, res: Response) => {
-        const createdBlogId = await blogsService.createNewBlogs(
-            req.body.name,
-            req.body.description,
-            req.body.websiteUrl)
+    blogsController.createBlog.bind(blogsController))
 
-        res.status(201).send(await blogsQueryRepository.findBlogById(createdBlogId))
-    })
-
-blogsRouter.get('/:id', async (req: Request, res: Response) => {
-    const blog = await blogsQueryRepository.findBlogById(req.params.id)
-    if (blog) {
-        res.status(200).send(blog)
-        return;
-    }
-    res.sendStatus(404)
-})
+blogsRouter.get('/:id', blogsController.getBlogById.bind(blogsController))
 
 blogsRouter.put('/:id',
     BasicAuthorization,
     ValidationOfBlogsInputParameters,
     InputBlogsValidationResult,
-    async (req: Request, res: Response) => {
-        const resultOfChange = await blogsService.updateBlogById(req.params.id,
-            req.body.name,
-            req.body.description,
-            req.body.websiteUrl)
-
-        if (resultOfChange) {
-            res.sendStatus(204)
-            return;
-        }
-        res.sendStatus(404)
-    })
+    blogsController.updateBlogById.bind(blogsController))
 
 blogsRouter.delete('/:id',
     BasicAuthorization,
-    async (req: Request, res: Response) => {
-        const deletionResult = await blogsService.deleteBlogsById(req.params.id)
-        if (deletionResult) {
-            res.sendStatus(204)
-            return;
-        }
-        res.sendStatus(404)
-
-    })
+    blogsController.deleteBlogById.bind(blogsController))
 
 blogsRouter.post("/:blogId/posts",
     BasicAuthorization,
     ValidationOfPostsInputParameters,
     InputPostsValidationResult,
-    async (req: Request, res: Response) => {
-        const blog = await blogsQueryRepository.findBlogById(req.params.blogId);
-        if (blog) {
-            const idOfCreatedPost = await postsService.createPost(req.body.title,
-                req.body.shortDescription,
-                req.body.content,
-                req.params.blogId)
-            res.status(201).send(await postsQueryRepository.findPostById(idOfCreatedPost))
-            return;
-        }
-        res.sendStatus(404)
-    })
+    blogsController.createPostForCertainBlog.bind(blogsController))
 
 blogsRouter.get("/:blogId/posts",
-    async (req: Request, res: Response) => {
-        const blog = await blogsQueryRepository.findBlogById(req.params.blogId);
-        if (blog) {
-            const query = req.query;
-            res.status(200).send(await postsQueryRepository.findPostsForCertainBlog(req.params.blogId, query))
-            return;
-        }
-        res.sendStatus(404)
-    })
+    blogsController.getPostForCertainBlog.bind(blogsController))
