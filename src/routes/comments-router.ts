@@ -12,7 +12,7 @@ commentsRouter.get("/:id", commentsController.getCommentById.bind(commentsContro
 
 commentsRouter.put("/:commentId",
     authMiddleware.verificationUserByAccessToken.bind(authMiddleware),
-    ValidationOfCommentsInputParameters,
+    ValidationOfCommentsInputParameters[0],
     inputCommentsValidationResult,
     commentsController.updateCommentById.bind(commentsController))
 
