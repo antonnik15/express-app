@@ -53,7 +53,10 @@ export class CommentsController {
 
     async likeOrDislikeComment(req: Request, res: Response) {
         const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId);
-        if (!comment) res.sendStatus(404);
+        if (!comment) {
+            res.sendStatus(404);
+            return;
+        }
         await this.commentsService.addLikeOrDislike(req.params.commentId, req.body.likeStatus)
         res.sendStatus(204)
     }
