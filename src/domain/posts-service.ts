@@ -47,6 +47,6 @@ export class PostsService {
             },
             postId)
         await this.postsRepository.createNewCommentForPost({...newComment});
-        return this.postsQueryRepository.mapDbCommentsToOutputCommentsType(newComment, user);
+        return this.postsQueryRepository.mapDbCommentsToOutputCommentsType(newComment, user.id);
     }
 }
