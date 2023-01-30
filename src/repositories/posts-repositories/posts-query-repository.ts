@@ -101,10 +101,10 @@ export class PostsQueryRepository {
             array)
     }
 
-    async mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType, user: any): Promise<CommentsType> {
+    async mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType, userId: string | undefined): Promise<CommentsType> {
         const totalLikes = await LikesModel.countDocuments({$and: [{commentId: dbComments.id}, {likeStatus: "Like"}]})
         const totalDislikes = await LikesModel.countDocuments({$and: [{commentId: dbComments.id}, {likeStatus: "Dislike"}]})
-        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: user.id}]})
+        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: userId}]})
         return new CommentsType(
             dbComments.id,
             dbComments.content,

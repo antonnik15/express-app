@@ -11,7 +11,7 @@ export class CommentsController {
     }
 
     async getCommentById(req: Request, res: Response) {
-        const comment = await this.commentsQueryRepository.findCommentById(req.params.id, req.user)
+        const comment = await this.commentsQueryRepository.findCommentById(req.params.id, req.user?.id)
         if (comment) {
             res.status(200).send(comment)
             return;
