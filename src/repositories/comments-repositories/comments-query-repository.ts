@@ -1,25 +1,13 @@
 import {CommentsType, DbCommentsType} from "../mongoose/types";
 import {CommentsModel} from "../mongoose/mongoose-schemes";
+import {PostsQueryRepository} from "../posts-repositories/posts-query-repository";
 
-export class CommentsQueryRepository {
-    async findCommentById(id: string): Promise<CommentsType | undefined> {
+export class CommentsQueryRepository extends PostsQueryRepository{
+    async findCommentById(id: string, user: any): Promise<CommentsType | undefined> {
         const dbComment: DbCommentsType | null = await CommentsModel.findOne({id: id});
         if (dbComment) {
-            return this.mapDbCommentsToOutputCommentsType(dbComment)
+            return this.mapDbCommentsToOutputCommentsType(dbComment, user)
         }
         return;
-    }
-
-    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): CommentsType {
-        return new CommentsType(
-            dbComments.id,
-            dbComments.content,
-            {userId: dbComments.commentatorInfo.userId, userLogin: dbComments.commentatorInfo.userLogin},
-            dbComments.createdAt,
-            {
-                likesCount: dbComments.likesInfo.likesCount,
-                dislikesCount: dbComments.likesInfo.dislikesCount,
-                myStatus: dbComments.likesInfo.myStatus
-            })
     }
 }

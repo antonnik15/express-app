@@ -1,8 +1,11 @@
 import {PostsRepository} from "../repositories/posts-repositories/posts-repository";
-import {CommentsType, PostsType, UserType} from "../repositories/mongoose/types";
+import {CommentsType, DbCommentsType, PostsType, UserType} from "../repositories/mongoose/types";
+import {ObjectId} from "mongodb";
+import {PostsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 
 export class PostsService {
-    constructor(public postsRepository: PostsRepository) {
+    constructor(public postsRepository: PostsRepository,
+                public postsQueryRepository: PostsQueryRepository) {
     }
     async createPost(title: string, shortDescription: string, content: string, blogId: string) : Promise<string> {
 
@@ -31,7 +34,8 @@ export class PostsService {
     async createNewCommentForPost(postId: string,
                                   content: string,
                                   user: UserType): Promise<CommentsType> {
-        const newComment: CommentsType = new CommentsType(
+        const newComment: DbCommentsType = new DbCommentsType(
+            new ObjectId(),
             (+new Date()).toString(),
             content,
             {userId: user.id, userLogin: user.login},
@@ -42,9 +46,7 @@ export class PostsService {
                 myStatus: 'None'
             },
             postId)
-
         await this.postsRepository.createNewCommentForPost({...newComment});
-        delete newComment.postId;
-        return newComment
+        return this.postsQueryRepository.mapDbCommentsToOutputCommentsType(newComment, user);
     }
 }

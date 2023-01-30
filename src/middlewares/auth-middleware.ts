@@ -21,3 +21,21 @@ export class AuthMiddleware {
         res.sendStatus(401)
     }
 }
+
+export class AuthMiddlewareForComments {
+    constructor(public usersQueryRepository: UsersQueryRepository,
+                public jwtService: JwtService) {
+    }
+    async verificationUserByAccessToken(req: Request, res: Response, next: NextFunction) {
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(" ")[1];
+            const userId = await this.jwtService.getUserIdByToken(token); if (userId) {
+                req.user = await this.usersQueryRepository.findUserById(userId);
+                next()
+                return;
+            }
+        }
+        next();
+        return;
+    }
+}

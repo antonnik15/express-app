@@ -9,7 +9,7 @@ import {
     inputCommentsValidationResult,
     ValidationOfCommentsInputParameters
 } from "../middlewares/input-comments-validation-middlewares";
-import {authMiddleware, postsController} from "../application/composition-root";
+import {authMiddleware, authMiddlewareForComments, postsController} from "../application/composition-root";
 
 
 export const postsRouter = Router()
@@ -42,5 +42,7 @@ postsRouter.post("/:postId/comments",
     inputCommentsValidationResult,
     postsController.createCommentForCertainPost.bind(postsController))
 
-postsRouter.get("/:postId/comments", postsController.getCommentForCertainPost.bind(postsController))
+postsRouter.get("/:postId/comments",
+    authMiddlewareForComments.verificationUserByAccessToken.bind(authMiddlewareForComments),
+    postsController.getCommentForCertainPost.bind(postsController))
 

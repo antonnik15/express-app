@@ -4,9 +4,9 @@ import {
     DbPostType,
     OutputObjectType,
     PostsType,
-    QueryParamsTypeForPost
+    QueryParamsTypeForPost, UserType
 } from "../mongoose/types";
-import {CommentsModel, PostsModel} from "../mongoose/mongoose-schemes";
+import {CommentsModel, LikesModel, PostsModel} from "../mongoose/mongoose-schemes";
 
 export class PostsQueryRepository {
     async findAllPosts(query: any) {
@@ -53,7 +53,7 @@ export class PostsQueryRepository {
         return await this.createOutputObject({blogId: blogId}, queryParamsObject, postsArray, PostsModel)
     }
 
-    async findCommentsForCertainPost(postId: string, query: any): Promise<OutputObjectType> {
+    async findCommentsForCertainPost(postId: string, query: any, user: any): Promise<OutputObjectType> {
         const queryParamsObject: QueryParamsTypeForPost = this._createQueryPostsObject(query);
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
@@ -64,7 +64,7 @@ export class PostsQueryRepository {
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize).lean();
 
-        const commentsArray: CommentsType[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment))
+        const commentsArray: Promise<CommentsType>[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment, user))
 
         return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, CommentsModel)
     }
@@ -91,7 +91,7 @@ export class PostsQueryRepository {
 
     async createOutputObject(filter: Object,
                              queryParams: QueryParamsTypeForPost,
-                             array: PostsType[] | CommentsType[],
+                             array: PostsType[] | Promise <CommentsType>[] | UserType[],
                              collection: any): Promise<OutputObjectType>{
         return new OutputObjectType(
             Math.ceil(await collection.count(filter) / +queryParams.pageSize),
@@ -101,16 +101,19 @@ export class PostsQueryRepository {
             array)
     }
 
-    mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType): CommentsType {
+    async mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType, user: any): Promise<CommentsType> {
+        const totalLikes = await LikesModel.countDocuments({$and: [{commentId: dbComments.id}, {likeStatus: "Like"}]})
+        const totalDislikes = await LikesModel.countDocuments({$and: [{commentId: dbComments.id}, {likeStatus: "Dislike"}]})
+        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: user.id}]})
         return new CommentsType(
             dbComments.id,
             dbComments.content,
             {userId: dbComments.commentatorInfo.userId, userLogin: dbComments.commentatorInfo.userLogin},
             dbComments.createdAt,
             {
-                likesCount: dbComments.likesInfo.likesCount,
-                dislikesCount: dbComments.likesInfo.dislikesCount,
-                myStatus: dbComments.likesInfo.myStatus
-            })
+                likesCount: totalLikes,
+                dislikesCount: totalDislikes,
+                myStatus: (likeStatus) ? likeStatus.userLikeStatus : "None"
+            });
     }
 }

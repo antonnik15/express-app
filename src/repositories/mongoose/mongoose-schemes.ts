@@ -3,7 +3,7 @@ import {
     AttemptType,
     AuthSessionsType,
     BlogType,
-    CommentsType,
+    DbCommentsType, LikesType,
     PostsType,
     UserAccountDB,
 } from "./types";
@@ -31,15 +31,28 @@ const postsSchema = new Schema<PostsType>({
 })
 export const PostsModel = mongoose.model("Post", postsSchema)
 
-const commentsSchema = new Schema<CommentsType>({
+const commentsSchema = new Schema<DbCommentsType>({
     id: {type: String},
     content: {type: String},
     commentatorInfo: {type: {userId: String, userLogin: String}},
     createdAt: String,
-    likesInfo: {type: {likesCount: Number, dislikesCount: Number, myStatus: String}},
+    likesInfo: {
+        type: {
+            likesCount: Number,
+            dislikesCount: Number,
+            myStatus: String
+        }
+    },
     postId: {type: String}
 })
 export const CommentsModel = mongoose.model("Comment", commentsSchema);
+
+const likesSchema = new Schema<LikesType>({
+    userId: {type: String},
+    commentId: {type: String},
+    userLikeStatus: {type: String}
+})
+export const LikesModel = mongoose.model("Likes", likesSchema)
 
 const usersSchema = new Schema<UserAccountDB>({
     id: {type: String},

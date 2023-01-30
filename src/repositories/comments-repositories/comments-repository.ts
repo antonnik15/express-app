@@ -1,12 +1,23 @@
-import {CommentsModel} from "../mongoose/mongoose-schemes";
+import {LikesModel} from "../mongoose/mongoose-schemes";
+import {LikesType} from "../mongoose/types";
 
 export class CommentsRepository {
-    async likeOrDislikeComment(commentId: string, likeStatus: string) {
-        if (likeStatus === 'Like') {
-            await CommentsModel.updateOne({id: commentId}, {$inc: {"likesInfo.likesCount": 1}, "likesInfo.myStatus": 'Like'})
+    async likeOrDislikeComment(commentId: string, likeStatus: string, userId: string) {
+        const existLikeStatus: LikesType | null = await LikesModel.findOne({$and: [{userId: userId}, {commentId: commentId}]})
+
+        if (!existLikeStatus) {
+            const like: LikesType = new LikesType(userId, commentId, likeStatus)
+            await LikesModel.create(like)
+            return;
         }
-        if (likeStatus === 'Dislike') {
-            await CommentsModel.updateOne({id: commentId}, {$inc: {"likesInfo.likesCount": 1}, "likesInfo.myStatus": 'Dislike'})
+
+        if (existLikeStatus) {
+            if (existLikeStatus.userLikeStatus === likeStatus) {
+                return;
+            } else {
+                await LikesModel.updateOne({$and: [{userId: userId}, {commentId: commentId}]}, {$set: {userLikeStatus: likeStatus}});
+                return;
+            }
         }
     }
 }

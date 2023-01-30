@@ -11,7 +11,7 @@ export class CommentsController {
     }
 
     async getCommentById(req: Request, res: Response) {
-        const comment = await this.commentsQueryRepository.findCommentById(req.params.id)
+        const comment = await this.commentsQueryRepository.findCommentById(req.params.id, req.user)
         if (comment) {
             res.status(200).send(comment)
             return;
@@ -20,7 +20,7 @@ export class CommentsController {
     }
 
     async updateCommentById(req: Request, res: Response) {
-        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId)
+        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId, req.user)
         if (!comment) {
             res.sendStatus(404)
             return;
@@ -36,7 +36,7 @@ export class CommentsController {
     }
 
     async deleteCommentById(req: Request, res: Response) {
-        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId)
+        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId, req.user)
         if (!comment) {
             res.sendStatus(404)
             return;
@@ -52,12 +52,12 @@ export class CommentsController {
     }
 
     async likeOrDislikeComment(req: Request, res: Response) {
-        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId);
+        const comment = await this.commentsQueryRepository.findCommentById(req.params.commentId, req.user);
         if (!comment) {
             res.sendStatus(404);
             return;
         }
-        await this.commentsService.addLikeOrDislike(req.params.commentId, req.body.likeStatus)
+        await this.commentsService.addLikeOrDislike(req.params.commentId, req.body.likeStatus, req.user.id)
         res.sendStatus(204)
     }
 

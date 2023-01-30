@@ -74,10 +74,7 @@ export class CommentsType {
                     likesCount: number,
                     dislikesCount: number,
                     myStatus: string
-                },
-                public postId?: string
-    ) {
-    }
+                }) {}
 }
 
 export class DbCommentsType {
@@ -96,13 +93,20 @@ export class DbCommentsType {
     }
 }
 
+export class LikesType {
+    constructor(public userId: string,
+                public commentId: string,
+                public userLikeStatus: string) {
+    }
+}
+
 export class OutputObjectType {
     constructor(
         public pagesCount: number,
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: Array<PostsType | CommentsType | UserType>) {
+        public items: PostsType[] | Promise <CommentsType>[] | UserType[]) {
     }
 }
 

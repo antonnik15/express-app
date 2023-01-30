@@ -4,7 +4,7 @@ import {PostsService} from "../domain/posts-service";
 import {PostsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {BlogsRepository} from "../repositories/blogs-repositories/blogs-repository";
 import {PostsRepository} from "../repositories/posts-repositories/posts-repository";
-import {AuthMiddleware} from "../middlewares/auth-middleware";
+import {AuthMiddleware, AuthMiddlewareForComments} from "../middlewares/auth-middleware";
 import {JwtService} from "./jwt-service";
 import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
 import {CommentsQueryRepository} from "../repositories/comments-repositories/comments-query-repository";
@@ -29,8 +29,8 @@ const blogsQueryRepository = new BlogsQueryRepository();
 const blogsRepository = new BlogsRepository();
 const blogsService = new BlogsService(blogsRepository);
 const postsRepository = new PostsRepository();
-const postsService = new PostsService(postsRepository);
 const postsQueryRepository = new PostsQueryRepository();
+const postsService = new PostsService(postsRepository, postsQueryRepository);
 const userRepository = new UsersRepository()
 const usersQueryRepository = new UsersQueryRepository();
 const userService = new UsersService()
@@ -40,7 +40,7 @@ export const authMiddleware = new AuthMiddleware(usersQueryRepository, jwtServic
 
 const commentsQueryRepository = new CommentsQueryRepository();
 const commentsRepository = new CommentsRepository();
-const commentsService = new CommentsService(commentsRepository);
+const commentsService = new CommentsService(commentsRepository, commentsQueryRepository);
 
 const emailAdapter = new EmailAdapter();
 
@@ -85,3 +85,4 @@ export const securityDevicesController = new SecurityDevicesController(
 export const userController = new UserController(
     usersQueryRepository,
     userService)
+export const authMiddlewareForComments = new AuthMiddlewareForComments(usersQueryRepository, jwtService)

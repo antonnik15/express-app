@@ -1,4 +1,4 @@
-import {CommentsType, PostsType} from "../mongoose/types";
+import {DbCommentsType, PostsType} from "../mongoose/types";
 import {CommentsModel, PostsModel} from "../mongoose/mongoose-schemes";
 
 export class PostsRepository {
@@ -29,7 +29,7 @@ export class PostsRepository {
         const deletionResult = await PostsModel.deleteOne({id: id})
         return deletionResult.deletedCount;
     }
-    async createNewCommentForPost(comment: CommentsType) {
+    async createNewCommentForPost(comment: DbCommentsType) {
         await CommentsModel.create(comment);
         return;
     }
