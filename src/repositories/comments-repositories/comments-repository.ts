@@ -10,12 +10,12 @@ export class CommentsRepository {
             await LikesModel.create(like)
             return;
         }
-
+        debugger;
         if (existLikeStatus) {
             if (existLikeStatus.userLikeStatus === likeStatus) {
                 return;
             } else {
-                await LikesModel.updateOne({$and: [{userId: userId}, {commentId: commentId}]}, {$set: {userLikeStatus: likeStatus}});
+                await LikesModel.updateOne({userId: userId, commentId: commentId}, {$set: {userLikeStatus: likeStatus}});
                 return;
             }
         }
