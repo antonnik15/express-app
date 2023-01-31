@@ -74,7 +74,7 @@ export class PostsController {
         if (post) {
             const query = req.query;
             const user = req.user;
-            res.status(200).send(await this.postsQueryRepository.findCommentsForCertainPost(req.params.postId, query, user))
+            res.status(200).send(await this.postsQueryRepository.findCommentsForCertainPost(req.params.postId, query, user?.id))
             return;
         }
         res.sendStatus(404);
