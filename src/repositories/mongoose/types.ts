@@ -106,7 +106,7 @@ export class OutputObjectType {
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: PostsType[] | Promise <CommentsType>[] | UserType[]) {
+        public items: PostsType[] | Awaited<CommentsType>[] | UserType[]) {
     }
 }
 

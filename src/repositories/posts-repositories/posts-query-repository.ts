@@ -63,8 +63,8 @@ export class PostsQueryRepository {
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize).lean();
-
-        const commentsArray: Promise<CommentsType>[] = dbCommentsForCertainPost.map(comment => this.mapDbCommentsToOutputCommentsType(comment, userId))
+        debugger;
+        const commentsArray: Awaited<CommentsType>[] = await Promise.all(dbCommentsForCertainPost.map((comment) => this.mapDbCommentsToOutputCommentsType(comment, userId)))
 
         return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, CommentsModel)
     }
@@ -91,7 +91,7 @@ export class PostsQueryRepository {
 
     async createOutputObject(filter: Object,
                              queryParams: QueryParamsTypeForPost,
-                             array: PostsType[] | Promise <CommentsType>[] | UserType[],
+                             array: PostsType[] | Awaited<CommentsType>[] | UserType[],
                              collection: any): Promise<OutputObjectType>{
         return new OutputObjectType(
             Math.ceil(await collection.count(filter) / +queryParams.pageSize),
@@ -104,7 +104,7 @@ export class PostsQueryRepository {
     async mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType, userId: string | undefined): Promise<CommentsType> {
         const totalLikes = await LikesModel.countDocuments({commentId: dbComments.id, userLikeStatus: 'Like'})
         const totalDislikes = await LikesModel.countDocuments({commentId: dbComments.id, userLikeStatus: "Dislike"})
-        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: userId}]})
+        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: userId}]});
         return new CommentsType(
             dbComments.id,
             dbComments.content,
