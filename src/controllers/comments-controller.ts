@@ -2,12 +2,14 @@ import {CommentsQueryRepository} from "../repositories/comments-repositories/com
 import {CommentsService} from "../domain/comments-service";
 import {AuthMiddleware} from "../middlewares/auth-middleware";
 import {Request, Response} from "express";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsController {
     constructor(
-        public commentsQueryRepository: CommentsQueryRepository,
-        public commentsService: CommentsService,
-        public authMiddleware: AuthMiddleware) {
+        @inject('CommentsQueryRepository') public commentsQueryRepository: CommentsQueryRepository,
+        @inject('CommentsService') public commentsService: CommentsService,
+        @inject('AuthMiddleware') public authMiddleware: AuthMiddleware) {
     }
 
     async getCommentById(req: Request, res: Response) {

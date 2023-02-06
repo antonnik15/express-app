@@ -14,7 +14,9 @@ import {authMiddleware, authMiddlewareForComments, postsController} from "../app
 
 export const postsRouter = Router()
 
-postsRouter.get("/", postsController.getPosts.bind(postsController))
+postsRouter.get("/",
+    authMiddlewareForComments.verificationUserByAccessToken.bind(authMiddleware),
+    postsController.getPosts.bind(postsController))
 
 postsRouter.post("/",
     BasicAuthorization,
@@ -23,7 +25,9 @@ postsRouter.post("/",
     InputPostsValidationResult,
     postsController.createPost.bind(postsController))
 
-postsRouter.get("/:id", postsController.getPostById.bind(postsController))
+postsRouter.get("/:id",
+    authMiddlewareForComments.verificationUserByAccessToken.bind(authMiddleware),
+    postsController.getPostById.bind(postsController))
 
 postsRouter.put("/:id",
     BasicAuthorization,
@@ -45,4 +49,10 @@ postsRouter.post("/:postId/comments",
 postsRouter.get("/:postId/comments",
     authMiddlewareForComments.verificationUserByAccessToken.bind(authMiddlewareForComments),
     postsController.getCommentForCertainPost.bind(postsController))
+
+postsRouter.post("/:postId/like-status",
+    authMiddleware.verificationUserByAccessToken.bind(authMiddleware),
+    ValidationOfCommentsInputParameters[1],
+    inputCommentsValidationResult,
+    postsController.likeOrDislikePost.bind(postsController))
 

@@ -1,21 +1,22 @@
-import {LikesModel} from "../mongoose/mongoose-schemes";
+import {LikesModelForComment} from "../mongoose/mongoose-schemes";
 import {LikesType} from "../mongoose/types";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsRepository {
     async likeOrDislikeComment(commentId: string, likeStatus: string, userId: string) {
-        const existLikeStatus: LikesType | null = await LikesModel.findOne({$and: [{userId: userId}, {commentId: commentId}]})
+        const existLikeStatus: LikesType | null = await LikesModelForComment.findOne({$and: [{userId: userId}, {commentId: commentId}]})
 
         if (!existLikeStatus) {
             const like: LikesType = new LikesType(userId, commentId, likeStatus)
-            await LikesModel.create(like)
+            await LikesModelForComment.create(like)
             return;
         }
-        debugger;
         if (existLikeStatus) {
             if (existLikeStatus.userLikeStatus === likeStatus) {
                 return;
             } else {
-                await LikesModel.updateOne({userId: userId, commentId: commentId}, {$set: {userLikeStatus: likeStatus}});
+                await LikesModelForComment.updateOne({userId: userId, commentId: commentId}, {$set: {userLikeStatus: likeStatus}});
                 return;
             }
         }

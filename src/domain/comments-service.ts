@@ -1,11 +1,12 @@
 import {CommentsModel} from "../repositories/mongoose/mongoose-schemes";
 import {CommentsRepository} from "../repositories/comments-repositories/comments-repository";
 import {CommentsQueryRepository} from "../repositories/comments-repositories/comments-query-repository";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class CommentsService {
-    constructor(public commentsRepository: CommentsRepository,
-                public commentsQueryRepository: CommentsQueryRepository) {
+    constructor(@inject('CommentsRepository') public commentsRepository: CommentsRepository,
+                @inject('CommentsQueryRepository') public commentsQueryRepository: CommentsQueryRepository) {
     }
     async deleteCommentById(id: string) {
         const deletionResult = await CommentsModel.deleteOne({id: id})

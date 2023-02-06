@@ -1,8 +1,10 @@
 import {BlogsRepository} from "../repositories/blogs-repositories/blogs-repository";
 import {BlogType} from "../repositories/mongoose/types";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsService {
-    constructor(public blogsRepository: BlogsRepository) {
+    constructor(@inject('BlogsRepository') public blogsRepository: BlogsRepository) {
     }
     async createNewBlogs(name: string, description: string, websiteUrl: string): Promise<string> {
         const newBlogs: BlogType = new BlogType((+new Date()).toString(), name, description, websiteUrl, new Date().toISOString())

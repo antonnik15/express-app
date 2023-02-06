@@ -1,21 +1,23 @@
 import bcrypt from "bcrypt";
 import {AuthSessionsType, dbSessionsType, UserAccountDB} from "../repositories/mongoose/types";
-import {UsersRepository} from "../repositories/users-repositories/users-repository";
-import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {UsersRepository} from "../repositories/users-repository/users-repository";
+import {UsersQueryRepository} from "../repositories/users-repository/users-query-repository";
 import {EmailAdapter} from "../adapter/email-adapter";
 import {JwtService} from "../application/jwt-service";
 import {
     SecurityDevicesQueryRepository
 } from "../repositories/security-devices-repositories/security-devices-query-repository";
 import {SecurityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthService {
-    constructor(public usersRepository: UsersRepository,
-                public emailAdapter: EmailAdapter,
-                public usersQueryRepository: UsersQueryRepository,
-                public jwtService: JwtService,
-                public securityDevicesQueryRepository: SecurityDevicesQueryRepository,
-                public securityDevicesRepository: SecurityDevicesRepository) {
+    constructor(@inject('UsersRepository') public usersRepository: UsersRepository,
+                @inject('EmailAdapter') public emailAdapter: EmailAdapter,
+                @inject('UsersQueryRepository') public usersQueryRepository: UsersQueryRepository,
+                @inject('JwtService') public jwtService: JwtService,
+                @inject('SecurityDevicesQueryRepository') public securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+                @inject('SecurityDevicesRepository') public securityDevicesRepository: SecurityDevicesRepository) {
     }
 
     async createNewUser(login: string, password: string, email: string) {
@@ -26,10 +28,11 @@ export class AuthService {
         await this.emailAdapter.sendEmailConfirmationMessage(newUser);
         return newUser.id;
     }
-    async confirmEmail(code: string) {
-        const user = await this.usersQueryRepository.findUserByConfirmationCode(code);
+    async confirmEmail(code: string, email: string) {
+        const user = await this.usersQueryRepository.findUserByLoginOrEmail(email)
         if (!user) return null;
-        if (user.emailConfirmation.expirationDate < new Date()) return null;
+        if ( user.emailConfirmation.confirmationCode === code
+            && user.emailConfirmation.expirationDate < new Date()) return null;
         if (user.isConfirmed) return null;
 
         return await this.usersRepository.updateConfirmation(user.id);

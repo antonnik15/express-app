@@ -3,17 +3,19 @@ import {PostsService} from "../domain/posts-service";
 import {AuthMiddleware} from "../middlewares/auth-middleware";
 import {Request, Response} from "express";
 import {CommentsType} from "../repositories/mongoose/types";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsController {
-    constructor(protected postsQueryRepository: PostsQueryRepository,
-                protected postsService: PostsService,
-                public authMiddleware: AuthMiddleware) {
+    constructor(@inject('PostsQueryRepository') protected postsQueryRepository: PostsQueryRepository,
+                @inject('PostsService') protected postsService: PostsService,
+                @inject('AuthMiddleware') public authMiddleware: AuthMiddleware) {
     }
 
 
     async getPosts(req: Request, res: Response) {
         const query = req.query;
-        res.status(200).send(await this.postsQueryRepository.findAllPosts(query))
+        res.status(200).send(await this.postsQueryRepository.findAllPosts(query, req.user.id))
     }
 
     async createPost(req: Request, res: Response) {
@@ -22,11 +24,11 @@ export class PostsController {
             req.body.shortDescription,
             req.body.content,
             req.body.blogId)
-        res.status(201).send(await this.postsQueryRepository.findPostById(postId))
+        res.status(201).send(await this.postsQueryRepository.findPostById(postId, req.user.id))
     }
 
     async getPostById(req: Request, res: Response) {
-        const post = await this.postsQueryRepository.findPostById(req.params.id)
+        const post = await this.postsQueryRepository.findPostById(req.params.id, req.user.id)
         if (post) {
             res.status(200).send(post)
             return;
@@ -57,7 +59,7 @@ export class PostsController {
     }
 
     async createCommentForCertainPost(req: Request, res: Response) {
-        const post = await this.postsQueryRepository.findPostById(req.params.postId);
+        const post = await this.postsQueryRepository.findPostById(req.params.postId, req.user.id);
         if (post) {
             const newComment: CommentsType = await this.postsService.createNewCommentForPost(
                 req.params.postId,
@@ -70,7 +72,7 @@ export class PostsController {
     }
 
     async getCommentForCertainPost(req: Request, res: Response) {
-        const post = await this.postsQueryRepository.findPostById(req.params.postId);
+        const post = await this.postsQueryRepository.findPostById(req.params.postId, req.user.id);
         if (post) {
             const query = req.query;
             const user = req.user;
@@ -79,4 +81,14 @@ export class PostsController {
         }
         res.sendStatus(404);
     }
+    async likeOrDislikePost(req: Request, res: Response) {
+        const post =  await this.postsQueryRepository.findPostById(req.params.postId, req.user.id);
+        if (!post) {
+            res.sendStatus(404);
+            return;
+        }
+        await this.postsService.addLikeOrDislikeForPost(req.params.postId, req.body.likeStatus, req.user.id, req.user.login)
+        res.sendStatus(204)
+    }
+
 }

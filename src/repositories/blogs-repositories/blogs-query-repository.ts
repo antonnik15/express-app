@@ -1,6 +1,8 @@
 import {BlogType, DbBlogType, QueryParamsTypeForBlogs} from "../mongoose/types";
 import {BlogsModel} from "../mongoose/mongoose-schemes";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsQueryRepository {
     async findAllBlogs(query: any) {
         const queryParamsObject: QueryParamsTypeForBlogs = this._createQueryParamsObject(query)
@@ -16,7 +18,8 @@ export class BlogsQueryRepository {
             .find(filter)
             .sort({[queryParamsObject.sortBy] : queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
-            .limit(+queryParamsObject.pageSize).lean();
+            .limit(+queryParamsObject.pageSize)
+            .lean();
 
         const blogsArray: BlogType[] = dbBlogs.map((blog: DbBlogType) => this.mapDbBlogTypeToOutputBlogType(blog))
 

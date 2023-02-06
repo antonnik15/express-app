@@ -1,15 +1,16 @@
+import "reflect-metadata"
 import 'dotenv/config'
 import express from "express"
 import bodyParser from "body-parser"
 import cookieParser from 'cookie-parser'
 import {runDb} from "./repositories/mongoose/db";
-import {blogsRouter} from "./routes/blogs-router";
-import {postsRouter} from "./routes/posts-router";
-import {deleteRouter} from "./routes/delete-all-data";
-import {usersRouter} from "./routes/users-router";
-import {authRouter} from "./routes/auth-router";
-import {commentsRouter} from "./routes/comments-router";
-import {securityDevicesRouter} from "./routes/security-devices-router";
+import {blogsRouter} from "./routers/blogs-router";
+import {postsRouter} from "./routers/posts-router";
+import {deleteRouter} from "./routers/delete-all-data";
+import {usersRouter} from "./routers/users-router";
+import {authRouter} from "./routers/auth-router";
+import {commentsRouter} from "./routers/comments-router";
+import {securityDevicesRouter} from "./routers/security-devices-router";
 
 const app = express();
 const port = process.env.PORT || 3001;

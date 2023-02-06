@@ -1,6 +1,8 @@
 import {AuthSessionsType} from "../mongoose/types";
 import {AuthModel} from "../mongoose/mongoose-schemes";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesRepository {
     async createNewAuthSession(newAuthSession: AuthSessionsType): Promise<undefined> {
         await AuthModel.create(newAuthSession);

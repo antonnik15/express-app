@@ -2,7 +2,9 @@ import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {UserModel} from "../mongoose/mongoose-schemes";
 import {UserAccountDB} from "../mongoose/types";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersRepository {
     async createNewUser(user: UserAccountDB) {
         await UserModel.create(user)

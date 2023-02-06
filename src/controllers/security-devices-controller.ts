@@ -4,11 +4,13 @@ import {
 } from "../repositories/security-devices-repositories/security-devices-query-repository";
 import {SecurityDevicesRepository} from "../repositories/security-devices-repositories/security-devices-repository";
 import {Request, Response} from "express";
+import {injectable, inject} from "inversify";
 
+@injectable()
 export class SecurityDevicesController {
-    constructor(public jwtService: JwtService,
-                public securityDevicesQueryRepository: SecurityDevicesQueryRepository,
-                public securityDevicesRepository: SecurityDevicesRepository) {
+    constructor(@inject('JwtService') public jwtService: JwtService,
+                @inject('SecurityDevicesQueryRepository') public securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+                @inject('SecurityDevicesRepository') public securityDevicesRepository: SecurityDevicesRepository) {
     }
 
     async getActiveSessions(req: Request, res: Response) {

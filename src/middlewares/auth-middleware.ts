@@ -1,10 +1,12 @@
 import {NextFunction, Response, Request} from "express";
-import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {UsersQueryRepository} from "../repositories/users-repository/users-query-repository";
 import {JwtService} from "../application/jwt-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthMiddleware {
-    constructor(public usersQueryRepository: UsersQueryRepository,
-                public jwtService: JwtService) {
+    constructor(@inject('UsersQueryRepository') public usersQueryRepository: UsersQueryRepository,
+                @inject('JwtService') public jwtService: JwtService) {
     }
     async verificationUserByAccessToken(req: Request, res: Response, next: NextFunction) {
         if (!req.headers.authorization) {
@@ -22,9 +24,10 @@ export class AuthMiddleware {
     }
 }
 
+@injectable()
 export class AuthMiddlewareForComments {
-    constructor(public usersQueryRepository: UsersQueryRepository,
-                public jwtService: JwtService) {
+    constructor(@inject('UsersQueryRepository') public usersQueryRepository: UsersQueryRepository,
+                @inject('JwtService') public jwtService: JwtService) {
     }
     async verificationUserByAccessToken(req: Request, res: Response, next: NextFunction) {
         if (req.headers.authorization) {

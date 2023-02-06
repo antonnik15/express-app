@@ -1,6 +1,8 @@
 import {AuthModel} from "../mongoose/mongoose-schemes";
 import {dbSessionsType, SessionType} from "../mongoose/types";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesQueryRepository {
     async findSessionByJWTPayload(jwtPayload: any) {
         const authSession: dbSessionsType | null = await AuthModel.findOne({

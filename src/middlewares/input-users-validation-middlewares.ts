@@ -1,6 +1,6 @@
 import {body, validationResult} from "express-validator";
 import {Response, Request, NextFunction} from "express";
-import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {UsersQueryRepository} from "../repositories/users-repository/users-query-repository";
 
 
 export const ValidationOfUsersInputParameters = [

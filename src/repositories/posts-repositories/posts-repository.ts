@@ -1,6 +1,8 @@
-import {DbCommentsType, PostsType} from "../mongoose/types";
-import {CommentsModel, PostsModel} from "../mongoose/mongoose-schemes";
+import {DbCommentsType, LikesType, LikesTypeForPost, PostsType} from "../mongoose/types";
+import {CommentsModel, LikesModelForPost, PostsModel} from "../mongoose/mongoose-schemes";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsRepository {
 
     async createPost(post: PostsType) {
@@ -32,6 +34,24 @@ export class PostsRepository {
     async createNewCommentForPost(comment: DbCommentsType) {
         await CommentsModel.create(comment);
         return;
+    }
+
+    async likeOrDislikePost(commentId: string, likeStatus: string, userId: string, userLogin: string) {
+        const existLikeStatus: LikesType | null = await LikesModelForPost.findOne({$and: [{userId: userId}, {commentId: commentId}]})
+
+        if (!existLikeStatus) {
+            const like: LikesType = new LikesTypeForPost(userId, commentId, likeStatus, userLogin)
+            await LikesModelForPost.create(like)
+            return;
+        }
+        if (existLikeStatus) {
+            if (existLikeStatus.userLikeStatus === likeStatus) {
+                return;
+            } else {
+                await LikesModelForPost.updateOne({userId: userId, commentId: commentId}, {$set: {userLikeStatus: likeStatus, addedAt: new Date().toISOString()}});
+                return;
+            }
+        }
     }
 }
 

@@ -1,10 +1,14 @@
-import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import "reflect-metadata"
+import {UsersQueryRepository} from "../repositories/users-repository/users-query-repository";
 import {UsersService} from "../domain/users-service";
 import {Request, Response} from "express";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class UserController {
-    constructor(public usersQueryRepository: UsersQueryRepository,
-                public usersService: UsersService) {
+    constructor(@inject('UsersQueryRepository') public usersQueryRepository: UsersQueryRepository,
+                @inject('UsersService') public usersService: UsersService) {
     }
 
     async getUsers(req: Request, res: Response) {

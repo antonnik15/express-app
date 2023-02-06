@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer'
 import {UserAccountDB} from "../repositories/mongoose/types";
+import {injectable} from "inversify";
 
+@injectable()
 export class EmailAdapter {
     async sendEmailConfirmationMessage(user: UserAccountDB) {
 

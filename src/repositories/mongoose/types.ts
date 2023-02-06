@@ -15,6 +15,35 @@ export class DbBlogType {
 
 }
 
+export class UserAccountDB {
+    accountData: {login: string, password: string, email: string, createdAt: string};
+    emailConfirmation: {confirmationCode: string, expirationDate: Date};
+    isConfirmed: boolean;
+    refreshToken?: string;
+    recoveryCodeInformation?: {
+        recoveryCode?: string,
+        expirationDate?: Date
+    }
+    constructor(public id: string,
+                login: string,
+                password: string,
+                email: string) {
+        this.accountData = {
+            login: login,
+            password: password,
+            email: email,
+            createdAt: new Date().toISOString()}
+        this.emailConfirmation = {
+            confirmationCode: uuidv4(),
+            expirationDate: add(new Date(), {
+                hours: 0,
+                minutes: 5,
+                seconds: 5
+            })}
+        this.isConfirmed = false;
+    }
+}
+
 export class QueryParamsTypeForBlogs {
     constructor(
         public searchNameTerm: string | null,
@@ -50,7 +79,17 @@ export class PostsType {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public createdAt: string) {
+        public createdAt: string,
+        public extendedLikesInfo: {
+            likesCount: number,
+            dislikesCount: number,
+            myStatus: string,
+            newestLikes: {
+                addedAt: string,
+                userId: string,
+                login: string
+            }[]
+        }) {
     }
 }
 
@@ -100,6 +139,16 @@ export class LikesType {
     }
 }
 
+export class LikesTypeForPost {
+    public addedAt: string;
+    constructor(public userId: string,
+                public postId: string,
+                public userLikeStatus: string,
+                public login: string) {
+        this.addedAt = new Date().toISOString();
+    }
+}
+
 export class OutputObjectType {
     constructor(
         public pagesCount: number,
@@ -107,35 +156,6 @@ export class OutputObjectType {
         public pageSize: number,
         public totalCount: number,
         public items: PostsType[] | Awaited<CommentsType>[] | UserType[]) {
-    }
-}
-
-export class UserAccountDB {
-    accountData: {login: string, password: string, email: string, createdAt: string};
-    emailConfirmation: {confirmationCode: string, expirationDate: Date};
-    isConfirmed: boolean;
-    refreshToken?: string;
-    recoveryCodeInformation?: {
-        recoveryCode?: string,
-        expirationDate?: Date
-    }
-    constructor(public id: string,
-                login: string,
-                password: string,
-                email: string) {
-        this.accountData = {
-            login: login,
-            password: password,
-            email: email,
-            createdAt: new Date().toISOString()}
-        this.emailConfirmation = {
-            confirmationCode: uuidv4(),
-            expirationDate: add(new Date(), {
-                hours: 0,
-                minutes: 5,
-                seconds: 5
-            })}
-        this.isConfirmed = false;
     }
 }
 

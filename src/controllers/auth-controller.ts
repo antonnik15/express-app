@@ -4,12 +4,14 @@ import {JwtService} from "../application/jwt-service";
 import {AuthMiddleware} from "../middlewares/auth-middleware";
 import {Request, Response} from "express";
 import UAParser from "ua-parser-js";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
-    constructor(public authService: AuthService,
-                public usersService: UsersService,
-                public jwtService: JwtService,
-                public authMiddleware: AuthMiddleware) {
+    constructor(@inject('AuthService') public authService: AuthService,
+                @inject('UsersService') public usersService: UsersService,
+                @inject('JwtService') public jwtService: JwtService,
+                @inject('AuthMiddleware') public authMiddleware: AuthMiddleware) {
     }
 
     async registration(req: Request, res: Response) {
@@ -22,7 +24,7 @@ export class AuthController {
     }
 
     async confirmationRegistration(req: Request, res: Response) {
-        const confirmationResult = await this.authService.confirmEmail(req.body.code);
+        const confirmationResult = await this.authService.confirmEmail(req.body.code, req.body.email);
         if (confirmationResult) {
             res.sendStatus(204)
             return;

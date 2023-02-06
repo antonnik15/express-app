@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import {UserAccountDB} from "../repositories/mongoose/types";
-import {UsersRepository} from "../repositories/users-repositories/users-repository";
-import {UsersQueryRepository} from "../repositories/users-repositories/users-query-repository";
+import {UsersRepository} from "../repositories/users-repository/users-repository";
+import {UsersQueryRepository} from "../repositories/users-repository/users-query-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersService {
-    usersRepository: UsersRepository;
-    usersQueryRepository: UsersQueryRepository;
-    constructor() {
-        this.usersRepository = new UsersRepository()
-        this.usersQueryRepository = new UsersQueryRepository()
+
+    constructor(@inject('UsersRepository') public usersRepository: UsersRepository,
+                @inject('UsersQueryRepository')public usersQueryRepository: UsersQueryRepository) {
     }
     async createNewUser(login: string,
                         password: string,

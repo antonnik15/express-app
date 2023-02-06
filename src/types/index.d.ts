@@ -1,4 +1,4 @@
-import {OutPutUsersType} from "../repositories/users-repositories/users-query-repository";
+import {OutPutUsersType} from "../repositories/users-repository/users-query-repository";
 
 
 declare global {

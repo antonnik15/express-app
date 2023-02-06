@@ -1,6 +1,9 @@
 import {OutputObjectType, QueryParamsTypeForUsers, UserAccountDB, UserType} from "../mongoose/types";
 import {UserModel} from "../mongoose/mongoose-schemes";
+import {injectable} from "inversify";
 
+
+@injectable()
 export class UsersQueryRepository {
     async findAllUsers(query: any): Promise<OutputObjectType> {
         const queryParamsObject: QueryParamsTypeForUsers = this._createQueryParamsObject(query)
@@ -43,12 +46,7 @@ export class UsersQueryRepository {
     async findUserByLoginOrEmail(loginOrEmail: string) {
         const user = await UserModel.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]});
         if(!user) return null;
-        return {
-            id: user.id,
-            accountData: user.accountData,
-            emailConfirmation: user.emailConfirmation,
-            isConfirmed: user.isConfirmed
-        }
+        return user;
     }
     findUserByConfirmationCode(code: string) {
         return UserModel.findOne({"emailConfirmation.confirmationCode": code})

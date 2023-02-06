@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from "uuid";
+import {injectable} from "inversify";
 
+@injectable()
 export class JwtService {
     async createAccessToken(id: string) {
         return jwt.sign({userId: id}, process.env.JWT_SECRET!, {expiresIn: "10m"})

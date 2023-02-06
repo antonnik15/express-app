@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, from "mongoose";
 import {
     AttemptType,
     AuthSessionsType,
     BlogType,
-    DbCommentsType, LikesType,
+    DbCommentsType, LikesType, LikesTypeForPost,
     PostsType,
     UserAccountDB,
 } from "./types";
@@ -27,7 +27,19 @@ const postsSchema = new Schema<PostsType>({
     content: {type: String},
     blogId: {type: String},
     blogName: {type: String},
-    createdAt: {type: String}
+    createdAt: {type: String},
+    extendedLikesInfo: {
+        type: {
+            likesCount: Number,
+            dislikesCount: Number,
+            myStatus: String,
+            newestLikes: [{
+                addedAt: Date,
+                userId: String,
+                login: String
+            }]
+        }
+    }
 })
 export const PostsModel = mongoose.model("Post", postsSchema)
 
@@ -47,14 +59,23 @@ const commentsSchema = new Schema<DbCommentsType>({
 })
 export const CommentsModel = mongoose.model("Comment", commentsSchema);
 
-const likesSchema = new Schema<LikesType>({
+const likesSchemaForComment = new Schema<LikesType>({
     userId: {type: String},
     commentId: {type: String},
     userLikeStatus: {type: String}
 })
-export const LikesModel = mongoose.model("Likes", likesSchema)
+export const LikesModelForComment = mongoose.model("Likes", likesSchemaForComment)
 
-const usersSchema = new Schema<UserAccountDB>({
+const likesSchemaForPost = new Schema<LikesTypeForPost>({
+    userId: {type: String},
+    postId: {type: String},
+    userLikeStatus: {type: String},
+    login: String,
+    addedAt: String
+})
+export const LikesModelForPost = mongoose.model("LikesForPosts", likesSchemaForPost)
+
+const usersSchema = new Schema<UserAccountDB, {canBeConfirmed: () => boolean}>({
     id: {type: String},
     accountData: {
         login: {type: String},
@@ -73,7 +94,9 @@ const usersSchema = new Schema<UserAccountDB>({
         expirationDate: Date
     }
 })
-export const UserModel = mongoose.model('User', usersSchema)
+
+export const UserModel = mongoose.model<UserAccountDB>('User', usersSchema)
+
 
 const authSchema = new Schema<AuthSessionsType>({
     userId: {type: String},

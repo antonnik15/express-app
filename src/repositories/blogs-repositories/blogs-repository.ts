@@ -1,6 +1,8 @@
 import {BlogsModel} from "../mongoose/mongoose-schemes";
 import {BlogType} from "../mongoose/types";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsRepository {
     async createNewBlogs(blog: BlogType) {
         await BlogsModel.create(blog)

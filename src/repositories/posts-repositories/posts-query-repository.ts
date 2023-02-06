@@ -1,15 +1,17 @@
 import {
     CommentsType,
     DbCommentsType,
-    DbPostType,
+    DbPostType, LikesTypeForPost,
     OutputObjectType,
     PostsType,
     QueryParamsTypeForPost, UserType
 } from "../mongoose/types";
-import {CommentsModel, LikesModel, PostsModel} from "../mongoose/mongoose-schemes";
+import {CommentsModel, LikesModelForComment, LikesModelForPost, PostsModel} from "../mongoose/mongoose-schemes";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsQueryRepository {
-    async findAllPosts(query: any) {
+    async findAllPosts(query: any, userId: string) {
         const queryParamsObject: QueryParamsTypeForPost = this._createQueryPostsObject(query);
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
@@ -23,20 +25,20 @@ export class PostsQueryRepository {
             .limit(+queryParamsObject.pageSize)
             .lean()
 
-        const postsArray: PostsType[] = dbPosts.map((post) => this.mapDbPostToOutPutPostType(post))
+        const postsArray: Awaited<PostsType>[] = await Promise.all( dbPosts.map((post) => this.mapDbPostToOutPutPostType(post, userId)))
 
         return await this.createOutputObject({}, queryParamsObject, postsArray, PostsModel)
     }
 
-    async findPostById(id: string): Promise<PostsType | undefined> {
+    async findPostById(id: string, userId: string): Promise<PostsType | undefined> {
         const postById: DbPostType | null =  await PostsModel.findOne({id: id})
         if(postById) {
-            return this.mapDbPostToOutPutPostType(postById)
+            return this.mapDbPostToOutPutPostType(postById, userId)
         }
         return;
     }
 
-    async findPostsForCertainBlog(blogId: string, query: any):  Promise<OutputObjectType> {
+    async findPostsForCertainBlog(blogId: string, query: any, userId: string | undefined):  Promise<OutputObjectType> {
         const queryParamsObject: QueryParamsTypeForPost = this._createQueryPostsObject(query)
 
         const countOfSkipElem = (+queryParamsObject.pageNumber - 1) * (+queryParamsObject.pageSize);
@@ -48,7 +50,7 @@ export class PostsQueryRepository {
             .limit(+queryParamsObject.pageSize)
             .lean()
 
-        const postsArray: PostsType[] = dbPostsForCertainBlog.map(post => this.mapDbPostToOutPutPostType(post))
+        const postsArray: Awaited<PostsType>[] = await Promise.all( dbPostsForCertainBlog.map((post) => this.mapDbPostToOutPutPostType(post, userId)))
 
         return await this.createOutputObject({blogId: blogId}, queryParamsObject, postsArray, PostsModel)
     }
@@ -63,7 +65,6 @@ export class PostsQueryRepository {
             .sort({[queryParamsObject.sortBy]: queryParamsObject.sortDirection})
             .skip(countOfSkipElem)
             .limit(+queryParamsObject.pageSize).lean();
-        debugger;
         const commentsArray: Awaited<CommentsType>[] = await Promise.all(dbCommentsForCertainPost.map((comment) => this.mapDbCommentsToOutputCommentsType(comment, userId)))
 
         return await this.createOutputObject({postId: postId}, queryParamsObject, commentsArray, CommentsModel)
@@ -77,21 +78,40 @@ export class PostsQueryRepository {
 
 
     }
-    mapDbPostToOutPutPostType(dbPost: DbPostType) {
-        return {
-            id: dbPost!.id,
-            title: dbPost!.title,
-            shortDescription: dbPost!.shortDescription,
-            content: dbPost!.content,
-            blogId: dbPost!.blogId,
-            blogName: dbPost!.blogName,
-            createdAt: dbPost!.createdAt
+
+    async mapDbPostToOutPutPostType(dbPost: DbPostType, userId: string | undefined) {
+        const totalLikes = await LikesModelForPost.countDocuments({postId: dbPost.id, userLikeStatus: 'Like'})
+        const totalDislikes = await LikesModelForPost.countDocuments({postId: dbPost.id, userLikeStatus: "Dislike"})
+        const likeStatus = await LikesModelForPost.findOne({$and: [{postId: dbPost.id}, {userId: userId}]});
+        let lastLikes: LikesTypeForPost[] = await LikesModelForPost.find({postId: dbPost.id})
+        lastLikes = lastLikes.sort((a, b) => +a.addedAt - (+b.addedAt))
+        while (lastLikes.length > 3) {
+            lastLikes.pop()
         }
+        const lastThreeLikes = lastLikes.map(l => {
+            return {addedAt: l.addedAt, userId: l.userId, login: l.login}
+        })
+        return new PostsType(
+            dbPost!.id,
+            dbPost!.title,
+            dbPost!.shortDescription,
+            dbPost!.content,
+            dbPost!.blogId,
+            dbPost!.blogName,
+            dbPost!.createdAt,
+            {
+                likesCount: totalLikes,
+                dislikesCount: totalDislikes,
+                myStatus: (likeStatus) ? likeStatus.userLikeStatus : "None",
+                newestLikes: lastThreeLikes
+            })
     }
+
+
 
     async createOutputObject(filter: Object,
                              queryParams: QueryParamsTypeForPost,
-                             array: PostsType[] | Awaited<CommentsType>[] | UserType[],
+                             array: Awaited<PostsType>[] | PostsType[] | Awaited<CommentsType>[] | UserType[],
                              collection: any): Promise<OutputObjectType>{
         return new OutputObjectType(
             Math.ceil(await collection.count(filter) / +queryParams.pageSize),
@@ -102,9 +122,9 @@ export class PostsQueryRepository {
     }
 
     async mapDbCommentsToOutputCommentsType(dbComments: DbCommentsType, userId: string | undefined): Promise<CommentsType> {
-        const totalLikes = await LikesModel.countDocuments({commentId: dbComments.id, userLikeStatus: 'Like'})
-        const totalDislikes = await LikesModel.countDocuments({commentId: dbComments.id, userLikeStatus: "Dislike"})
-        const likeStatus = await LikesModel.findOne({$and: [{commentId: dbComments.id}, {userId: userId}]});
+        const totalLikes = await LikesModelForComment.countDocuments({commentId: dbComments.id, userLikeStatus: 'Like'})
+        const totalDislikes = await LikesModelForComment.countDocuments({commentId: dbComments.id, userLikeStatus: "Dislike"})
+        const likeStatus = await LikesModelForComment.findOne({$and: [{commentId: dbComments.id}, {userId: userId}]});
         return new CommentsType(
             dbComments.id,
             dbComments.content,

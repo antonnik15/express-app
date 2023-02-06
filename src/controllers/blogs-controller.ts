@@ -3,12 +3,14 @@ import {BlogsService} from "../domain/blogs-service";
 import {PostsService} from "../domain/posts-service";
 import {PostsQueryRepository} from "../repositories/posts-repositories/posts-query-repository";
 import {Request, Response} from "express";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsController {
-    constructor(public blogsQueryRepository: BlogsQueryRepository,
-                public blogsService: BlogsService,
-                public postsService: PostsService,
-                public postsQueryRepository: PostsQueryRepository) {
+    constructor(@inject('BlogsQueryRepository') public blogsQueryRepository: BlogsQueryRepository,
+                @inject('BlogsService') public blogsService: BlogsService,
+                @inject('PostsService') public postsService: PostsService,
+                @inject('PostsQueryRepository') public postsQueryRepository: PostsQueryRepository) {
     }
 
     async getBlogs(req: Request, res: Response) {
