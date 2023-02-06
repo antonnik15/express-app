@@ -65,7 +65,7 @@ export class BlogsController {
                 req.body.shortDescription,
                 req.body.content,
                 req.params.blogId)
-            res.status(201).send(await this.postsQueryRepository.findPostById(idOfCreatedPost))
+            res.status(201).send(await this.postsQueryRepository.findPostById(idOfCreatedPost, req.user.id))
             return;
         }
         res.sendStatus(404)
@@ -75,7 +75,7 @@ export class BlogsController {
         const blog = await this.blogsQueryRepository.findBlogById(req.params.blogId);
         if (blog) {
             const query = req.query;
-            res.status(200).send(await this.postsQueryRepository.findPostsForCertainBlog(req.params.blogId, query))
+            res.status(200).send(await this.postsQueryRepository.findPostsForCertainBlog(req.params.blogId, query, req.user.id))
             return;
         }
         res.sendStatus(404)

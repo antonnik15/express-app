@@ -40,7 +40,7 @@ export class PostsRepository {
         const existLikeStatus: LikesType | null = await LikesModelForPost.findOne({$and: [{userId: userId}, {commentId: commentId}]})
 
         if (!existLikeStatus) {
-            const like: LikesType = new LikesTypeForPost(userId, commentId, likeStatus, userLogin)
+            const like: LikesTypeForPost = new LikesTypeForPost(userId, commentId, likeStatus, userLogin)
             await LikesModelForPost.create(like)
             return;
         }
